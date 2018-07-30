@@ -59,7 +59,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         //网格布局
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
         mRecyclerView.setLayoutManager(gridLayoutManager);
-        PictureListAdapter pictureAdapter = new PictureListAdapter(img, mCurrentDir.getAbsolutePath());
+        PictureListAdapter pictureAdapter = new PictureListAdapter(img, mCurrentDir.getAbsolutePath(), this);
         mRecyclerView.setAdapter(pictureAdapter);
     }
 

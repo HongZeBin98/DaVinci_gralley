@@ -10,7 +10,7 @@ public class SelectionCreator {
 
     private DaVinci mDaVinci;
 
-    public SelectionCreator(DaVinci daVinci){
+    SelectionCreator(DaVinci daVinci){
         mDaVinci = daVinci;
     }
 
