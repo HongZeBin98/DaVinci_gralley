@@ -1,14 +1,13 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
-import com.example.davinci.Bean.ImageBeanHolder;
+import com.example.davinci.bean.ImageBeanHolder;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -19,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
-import static com.example.davinci.Util.Constants.CPU_CORE_NUMBER;
-import static com.example.davinci.Util.Constants.EXECUTE_TASK;
+import static com.example.davinci.util.Constants.CPU_CORE_NUMBER;
+import static com.example.davinci.util.Constants.EXECUTE_TASK;
 
 /**
  * 图片加载类

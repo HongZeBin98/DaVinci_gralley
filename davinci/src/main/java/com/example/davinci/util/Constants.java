@@ -1,4 +1,4 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 /**
  * 常量类

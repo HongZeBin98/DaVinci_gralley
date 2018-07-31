@@ -1,4 +1,4 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.widget.ImageView;
 
-import com.example.davinci.Bean.ImageBeanHolder;
+import com.example.davinci.bean.ImageBeanHolder;
 
 import java.lang.ref.WeakReference;
 

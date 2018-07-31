@@ -1,10 +1,9 @@
-package com.example.davinci.Adapter;
+package com.example.davinci.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.davinci.Activity.GalleryMainActivity;
 import com.example.davinci.R;
-import com.example.davinci.Util.GalleryApplication;
-import com.example.davinci.Util.ImageLoader;
+import com.example.davinci.util.ImageLoader;
 
 import java.util.HashSet;
 import java.util.List;

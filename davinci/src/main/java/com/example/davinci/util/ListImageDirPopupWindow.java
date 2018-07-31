@@ -1,19 +1,18 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
-import com.example.davinci.Adapter.AlbumListAdapter;
-import com.example.davinci.Bean.FolderBean;
+import com.example.davinci.adapter.AlbumListAdapter;
+import com.example.davinci.bean.FolderBean;
 import com.example.davinci.R;
 
 import java.util.List;

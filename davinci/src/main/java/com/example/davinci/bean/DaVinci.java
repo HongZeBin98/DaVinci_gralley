@@ -1,10 +1,9 @@
-package com.example.davinci.Bean;
+package com.example.davinci.bean;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
-import java.util.Set;
 
 public class DaVinci {
     private final WeakReference<Activity> mContext;

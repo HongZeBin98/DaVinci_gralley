@@ -1,4 +1,4 @@
-package com.example.davinci.Bean;
+package com.example.davinci.bean;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;

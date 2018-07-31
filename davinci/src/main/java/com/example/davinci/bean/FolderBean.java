@@ -1,4 +1,4 @@
-package com.example.davinci.Bean;
+package com.example.davinci.bean;
 
 public class FolderBean {
 

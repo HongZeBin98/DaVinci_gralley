@@ -1,4 +1,4 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;

@@ -1,4 +1,4 @@
-package com.example.davinci.Activity;
+package com.example.davinci.activity;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -18,10 +18,11 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.davinci.Adapter.PictureListAdapter;
-import com.example.davinci.Bean.FolderBean;
+import com.example.davinci.adapter.PictureListAdapter;
+import com.example.davinci.bean.FolderBean;
 import com.example.davinci.R;
-import com.example.davinci.Util.ListImageDirPopupWindow;
+import com.example.davinci.model.PictureModel;
+import com.example.davinci.util.ListImageDirPopupWindow;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -33,7 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.davinci.Util.Constants.SCAN_FINISH;
+import static com.example.davinci.util.Constants.SCAN_FINISH;
 
 /**
  * 图库的主界面
@@ -129,59 +130,16 @@ public class GalleryMainActivity extends AppCompatActivity {
             Toast.makeText(this, "当前储存卡不可用！", Toast.LENGTH_SHORT).show();
             return;
         }
-        //启动线程扫描所有图片
-        new Thread() {
+        PictureModel.scanPicture(this, new PictureModel.ScanPictureCallBack() {
             @Override
-            public void run() {
-                mFolderBeans = new ArrayList<>();
-                Uri mImgUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                ContentResolver cr = GalleryMainActivity.this.getContentResolver();
-                String queryArgs = MediaStore.Images.Media.MIME_TYPE + " = ? or " + MediaStore.Images.Media.MIME_TYPE + " = ?";
-                Cursor cursor = cr.query(mImgUri, null, queryArgs, new String[]{"image/jpeg", "image/png"}, MediaStore.Images.Media.DATE_MODIFIED);
-                Set<String> mDirPaths = new HashSet<>();
-
-                if (cursor != null) {
-                    while (cursor.moveToNext()) {
-                        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                        File parentFile = new File(path).getParentFile();
-                        if (parentFile == null) {
-                            continue;
-                        }
-                        String dirPath = parentFile.getAbsolutePath();
-                        FolderBean folderBean;
-
-                        if (mDirPaths.contains(dirPath)) {
-                            continue;
-                        } else {
-                            mDirPaths.add(dirPath);
-                            folderBean = new FolderBean();
-                            folderBean.setDir(dirPath);
-                            folderBean.setFirstImgPath(path);
-                        }
-                        if (parentFile.list() == null) {
-                            continue;
-                        }
-                        //对文件夹中的数据进行过滤,获取图片的数量
-                        int picSize = parentFile.list(new FilenameFilter() {
-                            @Override
-                            public boolean accept(File file, String filename) {
-                                return filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png");
-                            }
-                        }).length;
-                        folderBean.setCount(picSize);
-                        mFolderBeans.add(folderBean);
-
-                        if (picSize > mMaxCount) {
-                            mCurrentDir = parentFile;
-                            mMaxCount = picSize;
-                        }
-                    }
-                    cursor.close();
-                }
+            public void onFinish(File currentDir, int maxCount, List<FolderBean> folderBeanList) {
+                mCurrentDir = currentDir;
+                mMaxCount = maxCount;
+                mFolderBeans = folderBeanList;
                 //通知Handler扫描图片完成
                 mAdapterHandler.sendEmptyMessage(SCAN_FINISH);
             }
-        }.start();
+        });
     }
 
     private class AdapterHandler extends Handler {
@@ -204,8 +162,6 @@ public class GalleryMainActivity extends AppCompatActivity {
                 initPopupWindow();
             }
         }
-
-
     }
 
 }

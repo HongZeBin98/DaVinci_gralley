@@ -1,8 +1,7 @@
-package com.example.davinci.Util;
+package com.example.davinci.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.ImageView;
 
 /**
  * 对图片进行压缩

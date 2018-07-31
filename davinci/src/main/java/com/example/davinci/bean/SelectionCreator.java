@@ -1,10 +1,10 @@
-package com.example.davinci.Bean;
+package com.example.davinci.bean;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
-import com.example.davinci.Activity.GalleryMainActivity;
+import com.example.davinci.activity.GalleryMainActivity;
 
 public class SelectionCreator {
 

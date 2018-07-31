@@ -1,18 +1,17 @@
-package com.example.davinci.Adapter;
+package com.example.davinci.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.davinci.Bean.FolderBean;
+import com.example.davinci.bean.FolderBean;
 import com.example.davinci.R;
-import com.example.davinci.Util.ImageLoader;
+import com.example.davinci.util.ImageLoader;
 
 import java.util.List;
 
