@@ -8,14 +8,10 @@ public class FolderBean {
     private String name;
     private int count;
 
-    public String getDir() {
-        return dir;
-    }
-
     public void setDir(String dir) {
         this.dir = dir;
-        int lastIndexOf = this.dir.indexOf("/");
-        this.name = this.dir.substring(lastIndexOf);
+        int lastIndexOf = this.dir.lastIndexOf("/");
+        this.name = this.dir.substring(lastIndexOf + 1);
     }
 
     public String getFirstImgPath() {

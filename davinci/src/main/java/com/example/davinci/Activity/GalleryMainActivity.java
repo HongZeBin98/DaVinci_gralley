@@ -12,11 +12,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.davinci.Adapter.PictureListAdapter;
 import com.example.davinci.Bean.FolderBean;
 import com.example.davinci.R;
+import com.example.davinci.Util.ListImageDirPopupWindow;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -37,9 +42,13 @@ import static com.example.davinci.Util.Constants.SCAN_FINISH;
 public class GalleryMainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
+    private TextView mAlbumSelection;
+    private List<FolderBean> mFolderBeans;
+    private ListImageDirPopupWindow mPopupWindow;
     private File mCurrentDir;
     private AdapterHandler mAdapterHandler;
     private int mMaxCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +56,13 @@ public class GalleryMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         initData();
+        initEvent();
     }
 
     /**
      * 配置recyclerVew
      */
-    protected void dataView(){
+    protected void dataView() {
         List<String> img = Arrays.asList(mCurrentDir.list());
         //反转列表，使最新的图片在最上面
         Collections.reverse(img);
@@ -63,52 +73,92 @@ public class GalleryMainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(pictureAdapter);
     }
 
+    protected void initPopupWindow() {
+        mPopupWindow = new ListImageDirPopupWindow(this, mFolderBeans);
+        mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                lightOn();
+            }
+        });
+    }
+
+    /**
+     * 内容区变亮
+     */
+    private void lightOn() {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 1.0f;
+        getWindow().setAttributes(lp);
+    }
+
+    /**
+     * 内容区域变暗
+     */
+    private void lightOff() {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.3f;
+        getWindow().setAttributes(lp);
+    }
+
+
+    private void initEvent() {
+        mAlbumSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPopupWindow.showAsDropDown(mAlbumSelection, 0, 0);
+                lightOff();
+            }
+        });
+    }
+
     /**
      * 实例化
      */
-    private void initView(){
+    private void initView() {
         mRecyclerView = findViewById(R.id.recyclerView);
+        mAlbumSelection = findViewById(R.id.id_bottom_album_selection);
     }
 
     /**
      * 利用ContentProvider扫描手机中所有图片
      */
-    private void initData(){
+    private void initData() {
         //判断储存卡是否可用
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Toast.makeText(this, "当前储存卡不可用！", Toast.LENGTH_SHORT).show();
             return;
         }
         //启动线程扫描所有图片
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
-                List<FolderBean> folderBeans = new ArrayList<>();
+                mFolderBeans = new ArrayList<>();
                 Uri mImgUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 ContentResolver cr = GalleryMainActivity.this.getContentResolver();
                 String queryArgs = MediaStore.Images.Media.MIME_TYPE + " = ? or " + MediaStore.Images.Media.MIME_TYPE + " = ?";
                 Cursor cursor = cr.query(mImgUri, null, queryArgs, new String[]{"image/jpeg", "image/png"}, MediaStore.Images.Media.DATE_MODIFIED);
                 Set<String> mDirPaths = new HashSet<>();
 
-                if (cursor != null){
-                    while(cursor.moveToNext()){
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
                         String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                         File parentFile = new File(path).getParentFile();
-                        if (parentFile == null){
+                        if (parentFile == null) {
                             continue;
                         }
                         String dirPath = parentFile.getAbsolutePath();
                         FolderBean folderBean;
 
-                        if (mDirPaths.contains(dirPath)){
+                        if (mDirPaths.contains(dirPath)) {
                             continue;
-                        }else {
+                        } else {
                             mDirPaths.add(dirPath);
                             folderBean = new FolderBean();
                             folderBean.setDir(dirPath);
                             folderBean.setFirstImgPath(path);
                         }
-                        if (parentFile.list() == null){
+                        if (parentFile.list() == null) {
                             continue;
                         }
                         //对文件夹中的数据进行过滤,获取图片的数量
@@ -119,9 +169,9 @@ public class GalleryMainActivity extends AppCompatActivity {
                             }
                         }).length;
                         folderBean.setCount(picSize);
-                        folderBeans.add(folderBean);
+                        mFolderBeans.add(folderBean);
 
-                        if(picSize > mMaxCount){
+                        if (picSize > mMaxCount) {
                             mCurrentDir = parentFile;
                             mMaxCount = picSize;
                         }
@@ -134,7 +184,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         }.start();
     }
 
-    private class AdapterHandler extends Handler{
+    private class AdapterHandler extends Handler {
         private final WeakReference<GalleryMainActivity> mMainActivity;
 
         AdapterHandler(Looper looper, GalleryMainActivity mainActivity) {
@@ -145,14 +195,16 @@ public class GalleryMainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             GalleryMainActivity imageLoader = mMainActivity.get();
-            if (imageLoader == null){
+            if (imageLoader == null) {
                 return;
             }
             super.handleMessage(msg);
-            if (msg.what == SCAN_FINISH){
+            if (msg.what == SCAN_FINISH) {
                 dataView();
+                initPopupWindow();
             }
         }
+
 
     }
 

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.example.davinci.Bean.ImageBeanHolder;
