@@ -38,7 +38,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="10dp"
             android:paddingTop="10dp"
-            android:text="图片和视频"
+            android:text="所有图片"
             android:textColor="#FFF"
             android:textSize="18sp" />
 

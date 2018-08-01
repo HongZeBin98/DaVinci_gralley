@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import static com.example.davinci.util.Constants.SCAN_FINISH;
 public class GalleryMainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
+    private RelativeLayout mRelativeLayout;
     private TextView mAlbumSelection;
     private List<FolderBean> mFolderBeans;
     private ListImageDirPopupWindow mPopupWindow;
@@ -93,6 +95,7 @@ public class GalleryMainActivity extends AppCompatActivity {
                     dirPath = mCurrentDir.getAbsolutePath();
                     Collections.reverse(mImg);
                 }
+                mAlbumSelection.setText(folderBean.getName());
                 mPictureListAdapter = new PictureListAdapter(mImg, dirPath, GalleryMainActivity.this);
                 mRecyclerView.setAdapter(mPictureListAdapter);
                 mPopupWindow.dismiss();
@@ -119,10 +122,10 @@ public class GalleryMainActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
-        mAlbumSelection.setOnClickListener(new View.OnClickListener() {
+        mRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPopupWindow.showAsDropDown(mAlbumSelection, 0, 0);
+                mPopupWindow.showAsDropDown(mRelativeLayout, 0, 0);
                 lightOff();
             }
         });
@@ -134,6 +137,7 @@ public class GalleryMainActivity extends AppCompatActivity {
     private void initView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mAlbumSelection = findViewById(R.id.id_bottom_album_selection);
+        mRelativeLayout = findViewById(R.id.id_bottom_relativeLayout);
     }
 
     /**
