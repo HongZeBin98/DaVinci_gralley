@@ -1,5 +1,6 @@
 package com.example.davinci.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,11 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
 
     private LayoutInflater mInflater;
     private List<FolderBean> mData;
+    private OnItemClickListener mOnItemClickListener;
+
+    public interface OnItemClickListener{
+        void onClick(int position);
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -46,19 +52,32 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         FolderBean bean = mData.get(position);
         holder.pictureNumber.setText(bean.getCount() + "");
         holder.albumName.setText(bean.getName());
         holder.imageView.setImageResource(R.drawable.black_background);
         ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(bean.getFirstImgPath(), holder.imageView);
 
-    }
+        if (mOnItemClickListener != null){
+            holder.itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    mOnItemClickListener.onClick(position);
+                }
+            });
+        }
 
+    }
 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        mOnItemClickListener = onItemClickListener;
     }
 }

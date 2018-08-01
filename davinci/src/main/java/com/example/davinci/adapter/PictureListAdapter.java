@@ -50,7 +50,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview, null, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview, parent, false);
         return new ViewHolder(view);
     }
 
@@ -59,8 +59,13 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         final String path = mImgList.get(position);
         holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(mDirPath + "/" + path, holder.imageView);
-        final String filePath = mDirPath + "/" + path;
+        final String filePath;
+        if(mDirPath.equals("")){
+            filePath = path;
+        }else{
+            filePath = mDirPath + "/" + path;
+        }
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView);
         if (mSelectedImg.contains(filePath)) {
             selectTrue(holder);
         } else {

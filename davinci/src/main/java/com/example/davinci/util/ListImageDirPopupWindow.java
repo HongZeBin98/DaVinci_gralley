@@ -22,8 +22,16 @@ public class ListImageDirPopupWindow extends PopupWindow {
     private int mWidth;
     private int mHeight;
     private View mConvertView;
-    private RecyclerView mRecyclerView;
     private List<FolderBean> mData;
+    private OnDirSelectedListener mListener;
+
+    public interface OnDirSelectedListener{
+        void onSelected(FolderBean folderBean);
+    }
+
+    public void setOnDirSelectedListener(OnDirSelectedListener mListener){
+        this.mListener = mListener;
+    }
 
     public ListImageDirPopupWindow(Context context, List<FolderBean> data) {
         setWidthAndHeight(context);
@@ -55,10 +63,17 @@ public class ListImageDirPopupWindow extends PopupWindow {
     }
 
     private void initViews(Context context) {
-        mRecyclerView = mConvertView.findViewById(R.id.id_popup_recyclerView);
+        RecyclerView recyclerView = mConvertView.findViewById(R.id.id_popup_recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(context);
-        mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.setAdapter(new AlbumListAdapter(context, mData));
+        recyclerView.setLayoutManager(manager);
+        AlbumListAdapter albumListAdapter = new AlbumListAdapter(context, mData);
+        albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                mListener.onSelected(mData.get(position));
+            }
+        });
+        recyclerView.setAdapter(albumListAdapter);
     }
 
     /**
@@ -68,6 +83,9 @@ public class ListImageDirPopupWindow extends PopupWindow {
         //获取屏幕的长和宽
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
+        if(wm == null){
+            return;
+        }
         wm.getDefaultDisplay().getMetrics(outMetrics);
         //设置popupWindow宽是屏幕宽度
         mWidth = outMetrics.widthPixels;

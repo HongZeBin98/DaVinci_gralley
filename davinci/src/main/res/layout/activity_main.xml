@@ -10,9 +10,11 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/id_bottom_relativeLayout"
         android:background="#696969"/>
 
     <RelativeLayout
+        android:id="@+id/id_bottom_relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

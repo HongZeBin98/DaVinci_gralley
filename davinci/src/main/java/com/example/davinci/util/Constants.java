@@ -8,5 +8,4 @@ public class Constants {
     public static final int CPU_CORE_NUMBER = CPUCoreNumber.getCPUCoreNum();
     public static final int EXECUTE_TASK = 1;
     public static final int SCAN_FINISH = 0;
-
 }

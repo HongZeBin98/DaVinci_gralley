@@ -11,7 +11,7 @@ public class PictureLruCache {
 
     private LruCache<String, Bitmap> mLruCache;
 
-    public PictureLruCache(){
+    PictureLruCache(){
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         int cacheSize = maxMemory / 8;
         mLruCache = new LruCache<String, Bitmap>(cacheSize){
@@ -20,14 +20,6 @@ public class PictureLruCache {
                 return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
             }
         };
-    }
-
-    /**
-     * 获取缓存容器
-     * @return 获取缓存容器
-     */
-    public LruCache<String, Bitmap> getLruCache(){
-        return mLruCache;
     }
 
     /**
@@ -41,8 +33,8 @@ public class PictureLruCache {
 
     /**
      * 将图片和地址加入缓存
-     * @param path
-     * @param bitmap
+     * @param path 图片路径
+     * @param bitmap 图片
      */
     public void addBitmapToLruCache(String path, Bitmap bitmap){
         if (getBitmapFromLruCache(path) == null){

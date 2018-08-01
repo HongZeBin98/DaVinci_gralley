@@ -14,11 +14,6 @@ public class DaVinci {
         mFragment = null;
     }
 
-    public DaVinci(Activity activity, Fragment fragment) {
-        this.mContext = new WeakReference<>(activity);
-        this.mFragment = new WeakReference<>(fragment);
-    }
-
     public static DaVinci from(Activity activity){
         return new DaVinci(activity);
     }

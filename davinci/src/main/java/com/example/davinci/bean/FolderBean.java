@@ -14,6 +14,14 @@ public class FolderBean {
         this.name = this.dir.substring(lastIndexOf + 1);
     }
 
+    public void setName() {
+        this.name = "所有图片";
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
     public String getFirstImgPath() {
         return firstImgPath;
     }

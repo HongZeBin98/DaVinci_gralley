@@ -17,12 +17,10 @@ import java.lang.ref.WeakReference;
 public class PictureHandler extends Handler {
     private final WeakReference<ImageLoader> mImageLoader;
 
-    public PictureHandler(Looper looper, ImageLoader imageLoader){
+    PictureHandler(Looper looper, ImageLoader imageLoader){
         super(looper);
         mImageLoader = new WeakReference<>(imageLoader);
     }
-
-
 
     @Override
     public void handleMessage(Message msg) {

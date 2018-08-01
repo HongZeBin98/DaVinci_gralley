@@ -6,6 +6,10 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
+/**
+ * 动态获取读写权限
+ * Created By Mr.Bean
+ */
 public class Authority {
     public static void requestAllPower(Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,

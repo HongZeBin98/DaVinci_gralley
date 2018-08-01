@@ -35,7 +35,7 @@ public class ImageResizer {
      * @return  适当的采样值
      */
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight){
-        if(reqHeight == 0 || reqHeight == 0){
+        if(reqHeight == 0 || reqWidth == 0){
             return 1;
         }
         //获取图片原本高度和宽度
