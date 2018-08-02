@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 DaVinci.from(MainActivity.this)
                         .choose()
+                        .maxSelectable(9)
                         .forResult(1);
             }
         });

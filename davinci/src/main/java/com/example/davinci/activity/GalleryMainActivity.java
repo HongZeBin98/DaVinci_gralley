@@ -1,13 +1,20 @@
 package com.example.davinci.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -28,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.davinci.util.Constants.MAX_SELECTION_COUNT;
 import static com.example.davinci.util.Constants.SCAN_FINISH;
 
 /**
@@ -39,18 +47,21 @@ public class GalleryMainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RelativeLayout mRelativeLayout;
     private TextView mAlbumSelection;
+    private TextView mSender;
     private List<FolderBean> mFolderBeans;
     private ListImageDirPopupWindow mPopupWindow;
     private File mCurrentDir;
-    private AdapterHandler mAdapterHandler;
     private List<String> mImg = null;
     private PictureListAdapter mPictureListAdapter;
     private List<String> mAllPictureList;
+    private Toolbar mToolbar;
+    private LocalSelectionCountReceiver mLocalReceiver;
+    private LocalBroadcastManager mLocalBroadcastManager;
+    private int mSelectionCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapterHandler = new AdapterHandler(getMainLooper(), this);
         setContentView(R.layout.activity_main);
         initView();
         initData();
@@ -64,7 +75,8 @@ public class GalleryMainActivity extends AppCompatActivity {
         //设置网格布局
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
         mRecyclerView.setLayoutManager(gridLayoutManager);
-        mPictureListAdapter = new PictureListAdapter(mAllPictureList, "", this);
+        mImg = mAllPictureList;
+        mPictureListAdapter = new PictureListAdapter(mImg, this, mLocalBroadcastManager);
         mRecyclerView.setAdapter(mPictureListAdapter);
     }
 
@@ -76,28 +88,28 @@ public class GalleryMainActivity extends AppCompatActivity {
                 lightOn();
             }
         });
-
         mPopupWindow.setOnDirSelectedListener(new ListImageDirPopupWindow.OnDirSelectedListener() {
             @Override
             public void onSelected(FolderBean folderBean) {
-                String dirPath;
+                mImg.clear();
                 if (folderBean.getName().equals("所有图片")) {
-                    mImg = mAllPictureList;
-                    dirPath = "";
+                    mImg.addAll(mAllPictureList);
                 } else {
                     mCurrentDir = new File(folderBean.getDir());
-                    mImg = Arrays.asList(mCurrentDir.list(new FilenameFilter() {
+                    List<String> list = Arrays.asList(mCurrentDir.list(new FilenameFilter() {
                         @Override
                         public boolean accept(File file, String s) {
                             return s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png");
                         }
                     }));
-                    dirPath = mCurrentDir.getAbsolutePath();
+                    String dirPath = mCurrentDir.getAbsolutePath();
+                    for(String x: list){
+                        mImg.add( dirPath+"/"+x);
+                    }
                     Collections.reverse(mImg);
                 }
                 mAlbumSelection.setText(folderBean.getName());
-                mPictureListAdapter = new PictureListAdapter(mImg, dirPath, GalleryMainActivity.this);
-                mRecyclerView.setAdapter(mPictureListAdapter);
+                mPictureListAdapter.notifyDataSetChanged();
                 mPopupWindow.dismiss();
             }
         });
@@ -129,12 +141,26 @@ public class GalleryMainActivity extends AppCompatActivity {
                 lightOff();
             }
         });
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GalleryMainActivity.this.finish();
+            }
+        });
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.example.davinci.REDUCE_SELECTION");
+        intentFilter.addAction("com.example.davinci.ADD_SELECTION");
+        mLocalBroadcastManager.registerReceiver(mLocalReceiver, intentFilter);
     }
 
     /**
      * 实例化
      */
     private void initView() {
+        mLocalReceiver = new LocalSelectionCountReceiver();
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        mToolbar = findViewById(R.id.toolbar);
+        mSender = findViewById(R.id.id_Toolbar_sender);
         mRecyclerView = findViewById(R.id.recyclerView);
         mAlbumSelection = findViewById(R.id.id_bottom_album_selection);
         mRelativeLayout = findViewById(R.id.id_bottom_relativeLayout);
@@ -149,6 +175,9 @@ public class GalleryMainActivity extends AppCompatActivity {
             Toast.makeText(this, "当前储存卡不可用！", Toast.LENGTH_SHORT).show();
             return;
         }
+        //设置ToolBar
+        setSupportActionBar(mToolbar);
+        //扫描所有图片
         PictureModel.scanPicture(this, new PictureModel.ScanPictureCallBack() {
             @Override
             public void onFinish(File currentDir, int maxCount, List<FolderBean> folderBeanList, List<String> allPictureList) {
@@ -156,9 +185,16 @@ public class GalleryMainActivity extends AppCompatActivity {
                 mFolderBeans = folderBeanList;
                 mAllPictureList = allPictureList;
                 //通知Handler扫描图片完成
-                mAdapterHandler.sendEmptyMessage(SCAN_FINISH);
+                AdapterHandler adapterHandler = new AdapterHandler(getMainLooper(), GalleryMainActivity.this);
+                adapterHandler.sendEmptyMessage(SCAN_FINISH);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLocalBroadcastManager.unregisterReceiver(mLocalReceiver);
     }
 
     private class AdapterHandler extends Handler {
@@ -179,6 +215,33 @@ public class GalleryMainActivity extends AppCompatActivity {
             if (msg.what == SCAN_FINISH) {
                 dataView();
                 initPopupWindow();
+            }
+        }
+    }
+
+    public class LocalSelectionCountReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            int color;
+            String str;
+            if (action != null) {
+                if (action.equals("com.example.davinci.ADD_SELECTION")) {
+                    mSelectionCount++;
+                } else if (action.equals("com.example.davinci.REDUCE_SELECTION")) {
+                    Log.e("hah", "o++++++++++++++++++++++++");
+                    mSelectionCount--;
+                }
+                if (mSelectionCount != 0) {
+                    str = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
+                    color = context.getResources().getColor(R.color.colorWhite);
+
+                } else {
+                    str = "发送";
+                    color = context.getResources().getColor(R.color.colorDefaultSender);
+                }
+                mSender.setTextColor(color);
+                mSender.setText(str);
             }
         }
     }

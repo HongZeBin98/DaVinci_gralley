@@ -3,6 +3,8 @@ package com.example.davinci.bean;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+import com.example.davinci.SelectionCreator;
+
 import java.lang.ref.WeakReference;
 
 public class DaVinci {

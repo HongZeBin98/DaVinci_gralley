@@ -1,9 +1,12 @@
 package com.example.davinci.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +21,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.davinci.util.Constants.MAX_SELECTION_COUNT;
+
 /**
  * recyclerView适配器
  * Created By Mr.Bean
  */
 public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.ViewHolder> {
     //记录被选择的图片
-    private static Set<String> mSelectedImg = new HashSet<>();
-    private static int mPictureNumber = 0;
+    private Set<String> mSelectedImg = new HashSet<>();
+    private int mPictureCount = 0;
     private Context mContext;
     private List<String> mImgList;
-    private String mDirPath;
+    private LocalBroadcastManager mLocalBroadcastManager;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -41,10 +46,10 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         }
     }
 
-    public PictureListAdapter(List<String> imgList, String dirPath, Context context) {
+    public PictureListAdapter(List<String> imgList, Context context, LocalBroadcastManager localBroadcastManager) {
         mImgList = imgList;
-        mDirPath = dirPath;
         mContext = context;
+        mLocalBroadcastManager = localBroadcastManager;
     }
 
     @NonNull
@@ -59,12 +64,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         final String path = mImgList.get(position);
         holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
-        final String filePath;
-        if(mDirPath.equals("")){
-            filePath = path;
-        }else{
-            filePath = mDirPath + "/" + path;
-        }
+        final String filePath = path;
         ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView);
         if (mSelectedImg.contains(filePath)) {
             selectTrue(holder);
@@ -74,22 +74,26 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         holder.select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent();
                 //该图片已经被选择
                 if (mSelectedImg.contains(filePath)) {
                     mSelectedImg.remove(filePath);
                     selectFalse(holder);
-                    mPictureNumber--;
+                    mPictureCount--;
+                    intent.setAction("com.example.davinci.REDUCE_SELECTION");
                 }
                 //该图片没有被选择
                 else {
-                    if (mPictureNumber < 9) {
+                    if (mPictureCount < MAX_SELECTION_COUNT) {
                         mSelectedImg.add(filePath);
                         selectTrue(holder);
-                        mPictureNumber++;
+                        mPictureCount++;
+                        intent.setAction("com.example.davinci.ADD_SELECTION");
                     } else {
-                        Toast.makeText(mContext, "你最多只能选择9张图片！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "你最多只能选择" + MAX_SELECTION_COUNT + "张图片！", Toast.LENGTH_SHORT).show();
                     }
                 }
+                mLocalBroadcastManager.sendBroadcast(intent);
             }
         });
     }

@@ -1,17 +1,20 @@
-package com.example.davinci.bean;
+package com.example.davinci;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.example.davinci.activity.GalleryMainActivity;
+import com.example.davinci.bean.DaVinci;
 
 public class SelectionCreator {
 
-    private DaVinci mDaVinci;
+    private final DaVinci mDaVinci;
+    private SelectionSpec mSelectionSpec;
 
-    SelectionCreator(DaVinci daVinci){
+    public SelectionCreator(DaVinci daVinci){
         mDaVinci = daVinci;
+        mSelectionSpec = SelectionSpec.getInstance();
     }
 
     public void forResult(int requestCode) {
@@ -25,5 +28,12 @@ public class SelectionCreator {
                 activity.startActivity(intent);
             }
         }
+    }
+
+    public SelectionCreator maxSelectable(int maxSelectable) {
+        if (maxSelectable < 1)
+            throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
+        mSelectionSpec.maxSelectable = maxSelectable;
+        return this;
     }
 }
