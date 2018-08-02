@@ -46,6 +46,7 @@ public class GalleryMainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private RelativeLayout mRelativeLayout;
+    private TextView mPreviewer;
     private TextView mAlbumSelection;
     private TextView mSender;
     private List<FolderBean> mFolderBeans;
@@ -159,6 +160,7 @@ public class GalleryMainActivity extends AppCompatActivity {
     private void initView() {
         mLocalReceiver = new LocalSelectionCountReceiver();
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        mPreviewer = findViewById(R.id.id_bottom_preview);
         mToolbar = findViewById(R.id.toolbar);
         mSender = findViewById(R.id.id_Toolbar_sender);
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -224,24 +226,27 @@ public class GalleryMainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             int color;
-            String str;
+            String sengerStr;
+            String previewerSrt;
             if (action != null) {
                 if (action.equals("com.example.davinci.ADD_SELECTION")) {
                     mSelectionCount++;
                 } else if (action.equals("com.example.davinci.REDUCE_SELECTION")) {
-                    Log.e("hah", "o++++++++++++++++++++++++");
                     mSelectionCount--;
                 }
                 if (mSelectionCount != 0) {
-                    str = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
+                    sengerStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
+                    previewerSrt = "预览("+mSelectionCount +")";
                     color = context.getResources().getColor(R.color.colorWhite);
 
                 } else {
-                    str = "发送";
+                    sengerStr = "发送";
+                    previewerSrt = "预览";
                     color = context.getResources().getColor(R.color.colorDefaultSender);
                 }
+                mPreviewer.setText(previewerSrt);
                 mSender.setTextColor(color);
-                mSender.setText(str);
+                mSender.setText(sengerStr);
             }
         }
     }
