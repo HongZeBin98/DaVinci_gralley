@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.davinci.R;
 import com.example.davinci.util.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,7 @@ import static com.example.davinci.util.Constants.MAX_SELECTION_COUNT;
  */
 public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.ViewHolder> {
     //记录被选择的图片
-    private Set<String> mSelectedImg = new HashSet<>();
+    private List<String> mSelectedImg = new ArrayList<>();
     private int mPictureCount = 0;
     private Context mContext;
     private List<String> mImgList;
@@ -121,5 +122,9 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
     @Override
     public int getItemCount() {
         return mImgList.size();
+    }
+
+    public List<String> getmSelectedImg(){
+        return mSelectedImg;
     }
 }

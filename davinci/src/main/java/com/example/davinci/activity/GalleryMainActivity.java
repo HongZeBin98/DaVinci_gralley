@@ -52,7 +52,6 @@ public class GalleryMainActivity extends AppCompatActivity {
     private TextView mSender;
     private List<FolderBean> mFolderBeans;
     private ListImageDirPopupWindow mPopupWindow;
-    private File mCurrentDir;
     private List<String> mImg;
     private PictureListAdapter mPictureListAdapter;
     private List<String> mAllPictureList;
@@ -93,20 +92,21 @@ public class GalleryMainActivity extends AppCompatActivity {
         mPopupWindow.setOnDirSelectedListener(new ListImageDirPopupWindow.OnDirSelectedListener() {
             @Override
             public void onSelected(FolderBean folderBean) {
+                File currentDir;
                 mImg.clear();
                 if (folderBean.getName().equals("所有图片")) {
                     mImg.addAll(mAllPictureList);
                 } else {
-                    mCurrentDir = new File(folderBean.getDir());
-                    List<String> list = Arrays.asList(mCurrentDir.list(new FilenameFilter() {
+                    currentDir = new File(folderBean.getDir());
+                    List<String> list = Arrays.asList(currentDir.list(new FilenameFilter() {
                         @Override
                         public boolean accept(File file, String s) {
                             return s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png");
                         }
                     }));
-                    String dirPath = mCurrentDir.getAbsolutePath();
-                    for(String x: list){
-                        mImg.add( dirPath+"/"+x);
+                    String dirPath = currentDir.getAbsolutePath();
+                    for (String x : list) {
+                        mImg.add(dirPath + "/" + x);
                     }
                     Collections.reverse(mImg);
                 }
@@ -149,6 +149,13 @@ public class GalleryMainActivity extends AppCompatActivity {
                 GalleryMainActivity.this.finish();
             }
         });
+        mSender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(mPictureListAdapter.getmSelectedImg());
+                finish();
+            }
+        });
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.davinci.REDUCE_SELECTION");
         intentFilter.addAction("com.example.davinci.ADD_SELECTION");
@@ -184,8 +191,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         //扫描所有图片
         PictureModel.scanPicture(this, new PictureModel.ScanPictureCallBack() {
             @Override
-            public void onFinish(File currentDir, int maxCount, List<FolderBean> folderBeanList, List<String> allPictureList) {
-                mCurrentDir = currentDir;
+            public void onFinish(List<FolderBean> folderBeanList, List<String> allPictureList) {
                 mFolderBeans = folderBeanList;
                 mAllPictureList = allPictureList;
                 //通知Handler扫描图片完成
@@ -238,7 +244,7 @@ public class GalleryMainActivity extends AppCompatActivity {
                 }
                 if (mSelectionCount != 0) {
                     sengerStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
-                    previewerSrt = "预览("+mSelectionCount +")";
+                    previewerSrt = "预览(" + mSelectionCount + ")";
                     color = context.getResources().getColor(R.color.colorWhite);
 
                 } else {
@@ -253,4 +259,11 @@ public class GalleryMainActivity extends AppCompatActivity {
         }
     }
 
+    public void setResult(List<String> list) {
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
+        setResult(RESULT_OK, intent);
+
+
+    }
 }

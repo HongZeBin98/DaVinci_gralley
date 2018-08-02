@@ -1,11 +1,15 @@
 package com.example.davinci;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.example.davinci.activity.GalleryMainActivity;
 import com.example.davinci.bean.DaVinci;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SelectionCreator {
 
@@ -25,7 +29,7 @@ public class SelectionCreator {
             if(fragment != null){
                 fragment.startActivityForResult(intent, requestCode);
             }else{
-                activity.startActivity(intent);
+                activity.startActivityForResult(intent,requestCode);
             }
         }
     }

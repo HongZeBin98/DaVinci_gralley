@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/open_button"
@@ -11,4 +12,13 @@
         android:layout_height="wrap_content"
         android:text="OPEN_DAVINCI"/>
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/show_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="xxx"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:layout_margin="10dp"/>
+
+</LinearLayout>

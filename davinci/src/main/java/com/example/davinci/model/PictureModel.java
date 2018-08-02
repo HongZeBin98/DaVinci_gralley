@@ -19,7 +19,7 @@ import java.util.Set;
 public class PictureModel {
 
     public interface ScanPictureCallBack {
-        void onFinish(File currentDir, int maxCount, List<FolderBean> folderBeanList, List<String> allPictureList);
+        void onFinish(List<FolderBean> folderBeanList, List<String> allPictureList);
     }
 
     public static void scanPicture(final Context context, final ScanPictureCallBack callback) {
@@ -28,8 +28,7 @@ public class PictureModel {
             public void run() {
                 List<FolderBean> folderBeanList = new ArrayList<>();
                 List<String> allPicturePath = new ArrayList<>();
-                int maxCount = 0;
-                File currentDir = null;
+                //使用ContentProvide获取所有图片的路径
                 Uri mImgUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 ContentResolver cr = context.getContentResolver();
                 String queryArgs = MediaStore.Images.Media.MIME_TYPE + " = ? or " + MediaStore.Images.Media.MIME_TYPE + " = ?";
@@ -75,11 +74,6 @@ public class PictureModel {
                         }).length;
                         folderBean.setCount(picSize);
                         folderBeanList.add(folderBean);
-
-                        if (picSize > maxCount) {
-                            currentDir = parentFile;
-                            maxCount = picSize;
-                        }
                     } while (cursor.moveToPrevious());
                     cursor.close();
                 }
@@ -90,7 +84,7 @@ public class PictureModel {
                 folderBeanForAllPicture.setCount(allPictureCount);
                 folderBeanList.add(folderBeanForAllPicture);
                 Collections.reverse(folderBeanList);
-                callback.onFinish(currentDir, maxCount, folderBeanList, allPicturePath);
+                callback.onFinish(folderBeanList, allPicturePath);
             }
         }.start();
     }
