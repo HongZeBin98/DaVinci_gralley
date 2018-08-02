@@ -16,7 +16,6 @@
         android:id="@+id/show_selection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="xxx"
         android:textColor="#000"
         android:textSize="18sp"
         android:layout_margin="10dp"/>

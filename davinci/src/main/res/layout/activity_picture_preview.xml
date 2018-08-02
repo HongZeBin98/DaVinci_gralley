@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".activity.GalleryMainActivity">
+    tools:context=".activity.PicturePreviewActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/id_preview_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
-        app:navigationIcon="@drawable/back"
-        app:title="图片"
-        app:titleTextColor="#FFF">
+        app:title="123"
+        app:navigationIcon="@drawable/back">
 
         <TextView
-            android:id="@+id/id_Toolbar_sender"
+            android:id="@+id/id_preview_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -30,17 +27,16 @@
             android:textColor="#1E268A" />
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/id_preview_viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/id_bottom_relativeLayout"
-        android:layout_below="@id/toolbar"
-        android:layout_marginTop="0dp"
-        android:background="#696969" />
+        android:layout_below="@id/id_preview_toolbar"
+        android:layout_above="@id/id_preview_bottom_relativeLayout"
+        android:background="#fff"/>
 
     <RelativeLayout
-        android:id="@+id/id_bottom_relativeLayout"
+        android:id="@+id/id_preview_bottom_relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -49,24 +45,13 @@
         android:orientation="horizontal"
         tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="23dp"
-            android:layout_toEndOf="@+id/id_bottom_album_selection"
-            android:src="@drawable/album_icon" />
-
-        <TextView
-            android:id="@+id/id_bottom_album_selection"
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp"
-            android:text="所有图片"
-            android:textColor="#FFF"
-            android:textSize="18sp" />
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="-220dp"
+            android:layout_toStartOf="@+id/id_bottom_preview" />
 
         <TextView
             android:id="@+id/id_bottom_preview"
@@ -77,8 +62,8 @@
             android:layout_marginEnd="15dp"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="预览"
+            android:textSize="18sp"
             android:textColor="#FFF"
-            android:textSize="18sp" />
+            android:text="选择" />
     </RelativeLayout>
 </RelativeLayout>

@@ -136,6 +136,7 @@ public class GalleryMainActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
+        //底部栏点击监听弹出相册选择列表
         mRelativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,17 +144,26 @@ public class GalleryMainActivity extends AppCompatActivity {
                 lightOff();
             }
         });
+        //标题栏返回键点击监听
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GalleryMainActivity.this.finish();
             }
         });
+        //标题栏发送键点击监听
         mSender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(mPictureListAdapter.getmSelectedImg());
                 finish();
+            }
+        });
+        //底部栏预览按键点击监听
+        mPreviewer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PicturePreviewActivity.actionStart(GalleryMainActivity.this, mPictureListAdapter.getmSelectedImg());
             }
         });
         IntentFilter intentFilter = new IntentFilter();
@@ -204,7 +214,18 @@ public class GalleryMainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //取消注册广播接收器
         mLocalBroadcastManager.unregisterReceiver(mLocalReceiver);
+    }
+
+
+    /**
+     * 设置要返回给上一个activity的内容
+     */
+    public void setResult(List<String> list) {
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
+        setResult(RESULT_OK, intent);
     }
 
     private class AdapterHandler extends Handler {
@@ -234,7 +255,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             int color;
-            String sengerStr;
+            String senderStr;
             String previewerSrt;
             if (action != null) {
                 if (action.equals("com.example.davinci.ADD_SELECTION")) {
@@ -243,27 +264,19 @@ public class GalleryMainActivity extends AppCompatActivity {
                     mSelectionCount--;
                 }
                 if (mSelectionCount != 0) {
-                    sengerStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
+                    senderStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
                     previewerSrt = "预览(" + mSelectionCount + ")";
                     color = context.getResources().getColor(R.color.colorWhite);
 
                 } else {
-                    sengerStr = "发送";
+                    senderStr = "发送";
                     previewerSrt = "预览";
                     color = context.getResources().getColor(R.color.colorDefaultSender);
                 }
                 mPreviewer.setText(previewerSrt);
                 mSender.setTextColor(color);
-                mSender.setText(sengerStr);
+                mSender.setText(senderStr);
             }
         }
-    }
-
-    public void setResult(List<String> list) {
-        Intent intent = new Intent();
-        intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
-        setResult(RESULT_OK, intent);
-
-
     }
 }
