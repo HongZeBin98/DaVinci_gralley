@@ -31,6 +31,7 @@ import com.example.davinci.util.ListImageDirPopupWindow;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,7 @@ public class GalleryMainActivity extends AppCompatActivity {
     private List<FolderBean> mFolderBeans;
     private ListImageDirPopupWindow mPopupWindow;
     private File mCurrentDir;
-    private List<String> mImg = null;
+    private List<String> mImg;
     private PictureListAdapter mPictureListAdapter;
     private List<String> mAllPictureList;
     private Toolbar mToolbar;
@@ -76,7 +77,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         //设置网格布局
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
         mRecyclerView.setLayoutManager(gridLayoutManager);
-        mImg = mAllPictureList;
+        mImg.addAll(mAllPictureList);
         mPictureListAdapter = new PictureListAdapter(mImg, this, mLocalBroadcastManager);
         mRecyclerView.setAdapter(mPictureListAdapter);
     }
@@ -158,6 +159,7 @@ public class GalleryMainActivity extends AppCompatActivity {
      * 实例化
      */
     private void initView() {
+        mImg = new ArrayList<>();
         mLocalReceiver = new LocalSelectionCountReceiver();
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mPreviewer = findViewById(R.id.id_bottom_preview);
