@@ -9,15 +9,14 @@ import android.widget.ImageView;
 
 import com.example.davinci.R;
 import com.example.davinci.util.ImageLoader;
-
 import java.util.List;
 
 public class ViewpagerAdapter extends PagerAdapter {
 
-    private List<String> mPicturePathList;
     private Context mContext;
+    private List<String> mPicturePathList;
 
-    public ViewpagerAdapter(Context context, List<String> picturePathList ){
+    public ViewpagerAdapter(Context context, List<String> picturePathList) {
         mContext = context;
         mPicturePathList = picturePathList;
     }
@@ -44,6 +43,7 @@ public class ViewpagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((View)object);
+        container.removeView((View) object);
     }
+
 }
