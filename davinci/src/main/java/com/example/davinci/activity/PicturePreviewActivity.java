@@ -64,6 +64,9 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mPictureCount = mPicturePathList.size();
         //设置标题默认值
         mToolbar.setTitle(1 + "/" + mPictureCount);
+        //设置发送键默认状态
+        mSender.setText("发送(" + mPictureCount + "/" + mPictureCount + ")");
+        mSender.setTextColor(getResources().getColor(R.color.colorWhite));
         //设置ToolBar
         setSupportActionBar(mToolbar);
         //给ViewPager提供数据
@@ -105,12 +108,27 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int color;
+                String senderStr;
+                int changedPictureCount;
                 String picturePath = mPicturePathList.get(mPosition);
+                //通过点击对图片选择列表进行增加或者减少
                 if (mChangedPicturePathList.contains(picturePath)) {
                     mChangedPicturePathList.remove(picturePath);
                 } else {
                     mChangedPicturePathList.add(picturePath);
                 }
+                //对ToolBar上发送进行状态的改变
+                changedPictureCount = mChangedPicturePathList.size();
+                if(changedPictureCount > 0){
+                    senderStr = "发送(" + changedPictureCount + "/" + mPictureCount + ")";
+                    color = getResources().getColor(R.color.colorWhite);
+                }else {
+                    senderStr = "发送";
+                    color = getResources().getColor(R.color.colorDefaultSender);
+                }
+                mSender.setTextColor(color);
+                mSender.setText(senderStr);
             }
         });
     }
