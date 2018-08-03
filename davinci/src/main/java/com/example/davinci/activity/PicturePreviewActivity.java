@@ -1,5 +1,6 @@
 package com.example.davinci.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
@@ -120,10 +121,10 @@ public class PicturePreviewActivity extends AppCompatActivity {
                 }
                 //对ToolBar上发送进行状态的改变
                 changedPictureCount = mChangedPicturePathList.size();
-                if(changedPictureCount > 0){
+                if (changedPictureCount > 0) {
                     senderStr = "发送(" + changedPictureCount + "/" + mPictureCount + ")";
                     color = getResources().getColor(R.color.colorWhite);
-                }else {
+                } else {
                     senderStr = "发送";
                     color = getResources().getColor(R.color.colorDefaultSender);
                 }
@@ -131,17 +132,32 @@ public class PicturePreviewActivity extends AppCompatActivity {
                 mSender.setText(senderStr);
             }
         });
+        mSender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(mChangedPicturePathList);
+                finish();
+            }
+        });
+    }
+
+    /**
+     * 设置要返回给上一个activity的内容
+     */
+    private void setResult(List<String> list) {
+        Intent intent = new Intent();
+        intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
+        setResult(RESULT_OK, intent);
     }
 
     /**
      * 启动该activity
-     *
      * @param context         上一个activity
      * @param picturePathList 需要传入该activity的被选择图片路径
      */
     public static void actionStart(Context context, List<String> picturePathList) {
         Intent intent = new Intent(context, PicturePreviewActivity.class);
         intent.putStringArrayListExtra("picture_path_list", (ArrayList<String>) picturePathList);
-        context.startActivity(intent);
+        ((Activity)context).startActivityForResult(intent, 1);
     }
 }

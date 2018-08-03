@@ -218,11 +218,25 @@ public class GalleryMainActivity extends AppCompatActivity {
         mLocalBroadcastManager.unregisterReceiver(mLocalReceiver);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                if(resultCode == RESULT_OK){
+                    List<String> returnList = data.getStringArrayListExtra("data_return");
+                    setResult(returnList);
+                    finish();
+                }
+                break;
+            default:
+
+        }
+    }
 
     /**
      * 设置要返回给上一个activity的内容
      */
-    public void setResult(List<String> list) {
+    private void setResult(List<String> list) {
         Intent intent = new Intent();
         intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
         setResult(RESULT_OK, intent);
