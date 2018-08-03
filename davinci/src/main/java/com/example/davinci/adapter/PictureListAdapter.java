@@ -66,7 +66,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
         final String filePath = path;
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView, false);
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView, false, 100);
         if (mSelectedImg.contains(filePath)) {
             selectTrue(holder);
         } else {

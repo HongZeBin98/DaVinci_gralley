@@ -59,7 +59,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         holder.albumName.setText(bean.getName());
         holder.pictureNumber.setText(bean.getCount() + "张");
         holder.imageView.setImageResource(R.drawable.black_background);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(bean.getFirstImgPath(), holder.imageView, false);
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(bean.getFirstImgPath(), holder.imageView, false, 100);
 
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {

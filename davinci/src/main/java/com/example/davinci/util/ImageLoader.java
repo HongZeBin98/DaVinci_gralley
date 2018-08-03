@@ -98,7 +98,7 @@ public class ImageLoader {
      * @param path      图片路径
      * @param imageView 放图片的容器
      */
-    public void loadImage(final String path, final ImageView imageView, final boolean originalPictureSwitch) {
+    public void loadImage(final String path, final ImageView imageView, final boolean originalPictureSwitch, final int reqFigure) {
         //防止出现图片闪烁现象，给imageView设置一个标签
         imageView.setTag(path);
         if (mPictureHandler == null) {
@@ -109,7 +109,7 @@ public class ImageLoader {
                 @Override
                 public void run() {
                     Bitmap bm;
-                    bm = new ImageResizer().decodeSampleBitmapFromResource(path, 1080, 1080);
+                    bm = new ImageResizer().decodeSampleBitmapFromResource(path, reqFigure, reqFigure);
                     //释放信号量
                     mTaskSemaphore.release();
                     sendUIMessage(bm, imageView, path);
@@ -126,7 +126,7 @@ public class ImageLoader {
                     public void run() {
                         Bitmap bm;
                         //获取缩略图
-                        bm = new ImageResizer().decodeSampleBitmapFromResource(path, 100, 100);
+                        bm = new ImageResizer().decodeSampleBitmapFromResource(path, reqFigure, reqFigure);
                         //把缩略图放入缓存
                         mPictureLruCache.addBitmapToLruCache(path, bm);
                         //释放信号量

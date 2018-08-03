@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.davinci.R;
+import com.example.davinci.adapter.PreviewThumbnailAdapter;
 import com.example.davinci.adapter.ViewpagerAdapter;
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private List<String> mPicturePathList;
     private List<String> mChangedPicturePathList;   //在预览中被更改的图片路径list
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mToolbar = findViewById(R.id.id_preview_toolbar);
         mViewPager = findViewById(R.id.id_preview_viewPager);
         mCheckBox = findViewById(R.id.id_bottom_preview_checkBox);
+        mRecyclerView= findViewById(R.id.id_preview_recyclerView);
     }
 
     private void initData() {
@@ -73,6 +78,12 @@ public class PicturePreviewActivity extends AppCompatActivity {
         //给ViewPager提供数据
         ViewpagerAdapter viewpagerAdapter = new ViewpagerAdapter(this, mPicturePathList);
         mViewPager.setAdapter(viewpagerAdapter);
+        //给recyclerView提供数据
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRecyclerView.setLayoutManager(manager);
+        PreviewThumbnailAdapter adapter = new PreviewThumbnailAdapter(mPicturePathList);
+        mRecyclerView.setAdapter(adapter);
     }
 
 

@@ -31,7 +31,7 @@ public class ViewpagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = View.inflate(mContext, R.layout.viewpager_item, null);
         ImageView imageView = view.findViewById(R.id.id_viewpager_imageView);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(mPicturePathList.get(position), imageView, true);
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(mPicturePathList.get(position), imageView, true, 1080);
         container.addView(view);
         return view;
     }
