@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.example.davinci.R;
 import com.example.davinci.adapter.ViewpagerAdapter;
@@ -16,16 +17,20 @@ import com.example.davinci.adapter.ViewpagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 图片预览
+ * Created By Mr.Bean
+ */
 public class PicturePreviewActivity extends AppCompatActivity {
 
-    private ViewPager mViewPager;
+    private int mPosition;
+    private int mPictureCount;
+    private TextView mSender;
     private Toolbar mToolbar;
     private CheckBox mCheckBox;
-    private int mPosition;
+    private ViewPager mViewPager;
     private List<String> mPicturePathList;
-    //在预览中被更改的图片路径list
-    private List<String> mChangedPicturePathList;
-
+    private List<String> mChangedPicturePathList;   //在预览中被更改的图片路径list
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,10 @@ public class PicturePreviewActivity extends AppCompatActivity {
         initData();
         initEvent();
     }
-    //获取由缩略图列表activity传入的所选择图片路径列表
+
+    /**
+     * 获取由缩略图列表activity传入的所选择图片路径列表
+     */
     private void getPicturePathList() {
         Intent intent = getIntent();
         mPicturePathList = intent.getStringArrayListExtra("picture_path_list");
@@ -44,6 +52,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
 
     private void initView() {
         mChangedPicturePathList = new ArrayList<>();
+        mSender = findViewById(R.id.id_preview_sender);
         mToolbar = findViewById(R.id.id_preview_toolbar);
         mViewPager = findViewById(R.id.id_preview_viewPager);
         mCheckBox = findViewById(R.id.id_bottom_preview_checkBox);
@@ -52,6 +61,9 @@ public class PicturePreviewActivity extends AppCompatActivity {
     private void initData() {
         //得到缩略图activity返回的选中图片的路径list
         getPicturePathList();
+        mPictureCount = mPicturePathList.size();
+        //设置标题默认值
+        mToolbar.setTitle(1 + "/" + mPictureCount);
         //设置ToolBar
         setSupportActionBar(mToolbar);
         //给ViewPager提供数据
@@ -77,11 +89,12 @@ public class PicturePreviewActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 mPosition = position;
-                if(mChangedPicturePathList.contains(mPicturePathList.get(position))){
+                if (mChangedPicturePathList.contains(mPicturePathList.get(position))) {
                     mCheckBox.setChecked(true);
-                }else {
+                } else {
                     mCheckBox.setChecked(false);
                 }
+                mToolbar.setTitle((position + 1) + "/" + mPictureCount);
             }
 
             @Override
@@ -102,7 +115,13 @@ public class PicturePreviewActivity extends AppCompatActivity {
         });
     }
 
-    public static void actionStart(Context context, List<String> picturePathList){
+    /**
+     * 启动该activity
+     *
+     * @param context         上一个activity
+     * @param picturePathList 需要传入该activity的被选择图片路径
+     */
+    public static void actionStart(Context context, List<String> picturePathList) {
         Intent intent = new Intent(context, PicturePreviewActivity.class);
         intent.putStringArrayListExtra("picture_path_list", (ArrayList<String>) picturePathList);
         context.startActivity(intent);

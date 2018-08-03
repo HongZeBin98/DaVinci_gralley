@@ -250,6 +250,9 @@ public class GalleryMainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 发送选择数有增加或者减少的广播来获取当前被选择数
+     */
     public class LocalSelectionCountReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -267,7 +270,6 @@ public class GalleryMainActivity extends AppCompatActivity {
                     senderStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
                     previewerSrt = "预览(" + mSelectionCount + ")";
                     color = context.getResources().getColor(R.color.colorWhite);
-
                 } else {
                     senderStr = "发送";
                     previewerSrt = "预览";
