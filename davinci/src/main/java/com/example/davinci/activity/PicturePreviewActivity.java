@@ -81,7 +81,8 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PicturePreviewActivity.this.finish();
+                setResult(mChangedPicturePathList, RESULT_CANCELED);
+                finish();
             }
         });
         //设置判断viewPager滚动到每一页时checkBox是否被选中
@@ -135,19 +136,26 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mSender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setResult(mChangedPicturePathList);
+                setResult(mChangedPicturePathList, RESULT_OK);
                 finish();
             }
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(mChangedPicturePathList, RESULT_CANCELED);
+        super.onBackPressed();
+
+    }
+
     /**
      * 设置要返回给上一个activity的内容
      */
-    private void setResult(List<String> list) {
+    private void setResult(List<String> list, int sign) {
         Intent intent = new Intent();
         intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
-        setResult(RESULT_OK, intent);
+        setResult(sign, intent);
     }
 
     /**

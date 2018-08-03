@@ -220,16 +220,23 @@ public class GalleryMainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
-                if(resultCode == RESULT_OK){
-                    List<String> returnList = data.getStringArrayListExtra("data_return");
+                List<String> returnList = data.getStringArrayListExtra("data_return");
+                //把返回的数据再返回给调用module接口的activity
+                if (resultCode == RESULT_OK) {
                     setResult(returnList);
                     finish();
                 }
+                //把得到的新的选择图片路径列表更新到界面上
+                else {
+                    mSelectionCount = returnList.size();
+                    mPictureListAdapter.setmSelectedImg(returnList);
+                    mPictureListAdapter.notifyDataSetChanged();
+                    changeTextViewCount(this);
+                }
                 break;
             default:
-
         }
     }
 
@@ -240,6 +247,29 @@ public class GalleryMainActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
         setResult(RESULT_OK, intent);
+    }
+
+
+    /**
+     * 改变预览和发送textView上的被选择数
+     * @param context 上下文
+     */
+    private void changeTextViewCount(Context context){
+        int color;
+        String senderStr;
+        String previewerSrt;
+        if (mSelectionCount != 0) {
+            senderStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
+            previewerSrt = "预览(" + mSelectionCount + ")";
+            color = context.getResources().getColor(R.color.colorWhite);
+        } else {
+            senderStr = "发送";
+            previewerSrt = "预览";
+            color = context.getResources().getColor(R.color.colorDefaultSender);
+        }
+        mPreviewer.setText(previewerSrt);
+        mSender.setTextColor(color);
+        mSender.setText(senderStr);
     }
 
     private class AdapterHandler extends Handler {
@@ -271,27 +301,13 @@ public class GalleryMainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            int color;
-            String senderStr;
-            String previewerSrt;
             if (action != null) {
                 if (action.equals("com.example.davinci.ADD_SELECTION")) {
                     mSelectionCount++;
                 } else if (action.equals("com.example.davinci.REDUCE_SELECTION")) {
                     mSelectionCount--;
                 }
-                if (mSelectionCount != 0) {
-                    senderStr = "发送(" + mSelectionCount + "/" + MAX_SELECTION_COUNT + ")";
-                    previewerSrt = "预览(" + mSelectionCount + ")";
-                    color = context.getResources().getColor(R.color.colorWhite);
-                } else {
-                    senderStr = "发送";
-                    previewerSrt = "预览";
-                    color = context.getResources().getColor(R.color.colorDefaultSender);
-                }
-                mPreviewer.setText(previewerSrt);
-                mSender.setTextColor(color);
-                mSender.setText(senderStr);
+                changeTextViewCount(GalleryMainActivity.this);
             }
         }
     }
