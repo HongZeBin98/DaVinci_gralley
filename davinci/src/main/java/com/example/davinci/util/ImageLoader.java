@@ -108,8 +108,8 @@ public class ImageLoader {
             addTaskIntoQueue(new Runnable() {
                 @Override
                 public void run() {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    Bitmap bm = BitmapFactory.decodeFile(path, options);
+                    Bitmap bm;
+                    bm = new ImageResizer().decodeSampleBitmapFromResource(path, 1080, 1080);
                     //释放信号量
                     mTaskSemaphore.release();
                     sendUIMessage(bm, imageView, path);
