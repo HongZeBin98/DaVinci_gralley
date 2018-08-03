@@ -263,8 +263,8 @@ public class GalleryMainActivity extends AppCompatActivity {
             previewerSrt = "预览(" + mSelectionCount + ")";
             color = context.getResources().getColor(R.color.colorWhite);
         } else {
-            senderStr = "发送";
-            previewerSrt = "预览";
+            senderStr = "";
+            previewerSrt = "";
             color = context.getResources().getColor(R.color.colorDefaultSender);
         }
         mPreviewer.setText(previewerSrt);

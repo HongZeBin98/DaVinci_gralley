@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="12dp"
-            android:text="发送"
             android:textSize="16sp"
             android:textColor="#1E268A" />
     </android.support.v7.widget.Toolbar>
@@ -77,7 +76,6 @@
             android:layout_marginEnd="15dp"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="预览"
             android:textColor="#FFF"
             android:textSize="18sp" />
     </RelativeLayout>

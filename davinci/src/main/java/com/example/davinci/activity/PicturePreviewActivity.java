@@ -126,7 +126,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
                     senderStr = "发送(" + changedPictureCount + "/" + mPictureCount + ")";
                     color = getResources().getColor(R.color.colorWhite);
                 } else {
-                    senderStr = "发送";
+                    senderStr = "";
                     color = getResources().getColor(R.color.colorDefaultSender);
                 }
                 mSender.setTextColor(color);
