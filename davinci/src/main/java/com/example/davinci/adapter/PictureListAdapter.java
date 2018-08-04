@@ -63,7 +63,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
     @Override
     public void onBindViewHolder(@NonNull final PictureListAdapter.ViewHolder holder, int position) {
         final String path = mImgList.get(position);
-        holder.imageView.setImageResource(R.drawable.black_background);
+            holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
         final String filePath = path;
         ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView, false, 100);

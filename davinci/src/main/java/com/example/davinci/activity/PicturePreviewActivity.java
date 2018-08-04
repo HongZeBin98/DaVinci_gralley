@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,8 @@ import com.example.davinci.adapter.ViewpagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.View.INVISIBLE;
+
 /**
  * 图片预览
  * Created By Mr.Bean
@@ -33,9 +36,11 @@ public class PicturePreviewActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private CheckBox mCheckBox;
     private ViewPager mViewPager;
+    private RecyclerView mRecyclerView;
     private List<String> mPicturePathList;
     private List<String> mChangedPicturePathList;   //在预览中被更改的图片路径list
-    private RecyclerView mRecyclerView;
+    private PreviewThumbnailAdapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +87,8 @@ public class PicturePreviewActivity extends AppCompatActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(manager);
-        PreviewThumbnailAdapter adapter = new PreviewThumbnailAdapter(mPicturePathList);
-        mRecyclerView.setAdapter(adapter);
+        mAdapter = new PreviewThumbnailAdapter(mPicturePathList);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 
@@ -111,6 +116,8 @@ public class PicturePreviewActivity extends AppCompatActivity {
                     mCheckBox.setChecked(false);
                 }
                 mToolbar.setTitle((position + 1) + "/" + mPictureCount);
+                mAdapter.setCurrentPosition(position);
+                mRecyclerView.scrollToPosition(position);
             }
 
             @Override
@@ -168,6 +175,8 @@ public class PicturePreviewActivity extends AppCompatActivity {
         intent.putStringArrayListExtra("data_return", (ArrayList<String>) list);
         setResult(sign, intent);
     }
+
+
 
     /**
      * 启动该activity

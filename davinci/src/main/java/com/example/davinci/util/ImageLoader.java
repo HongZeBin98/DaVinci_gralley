@@ -98,13 +98,13 @@ public class ImageLoader {
      * @param path      图片路径
      * @param imageView 放图片的容器
      */
-    public void loadImage(final String path, final ImageView imageView, final boolean originalPictureSwitch, final int reqFigure) {
+    public void loadImage(final String path, final ImageView imageView, final boolean originalPictureFlag, final int reqFigure) {
         //防止出现图片闪烁现象，给imageView设置一个标签
         imageView.setTag(path);
         if (mPictureHandler == null) {
             mPictureHandler = new PictureHandler(Looper.getMainLooper(), this);
         }
-        if (originalPictureSwitch) {
+        if (originalPictureFlag) {
             addTaskIntoQueue(new Runnable() {
                 @Override
                 public void run() {
