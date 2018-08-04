@@ -87,6 +87,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(manager);
+        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         mAdapter = new PreviewThumbnailAdapter(mPicturePathList);
         mRecyclerView.setAdapter(mAdapter);
     }

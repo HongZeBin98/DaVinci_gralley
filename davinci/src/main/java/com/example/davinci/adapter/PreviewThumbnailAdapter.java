@@ -65,7 +65,13 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
     //传入当前页面的position
     public void setCurrentPosition(int position) {
         mPosition = position;
-        notifyDataSetChanged();
+        notifyItemChanged(mPosition);
+        if (mPosition - 1 >= 0) {
+            notifyItemChanged(mPosition - 1);
+        }
+        if (mPosition + 1 <= mSelectedImg.size() - 1) {
+            notifyItemChanged(mPosition + 1);
+        }
     }
 
     @Override
