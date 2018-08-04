@@ -155,7 +155,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         mSender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setResult(mPictureListAdapter.getmSelectedImg());
+                setResult(mPictureListAdapter.getSelectedImg());
                 finish();
             }
         });
@@ -163,7 +163,7 @@ public class GalleryMainActivity extends AppCompatActivity {
         mPreviewer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PicturePreviewActivity.actionStart(GalleryMainActivity.this, mPictureListAdapter.getmSelectedImg());
+                PicturePreviewActivity.actionStart(GalleryMainActivity.this, mPictureListAdapter.getSelectedImg());
             }
         });
         IntentFilter intentFilter = new IntentFilter();
@@ -231,7 +231,7 @@ public class GalleryMainActivity extends AppCompatActivity {
                 //把得到的新的选择图片路径列表更新到界面上
                 else {
                     mSelectionCount = returnList.size();
-                    mPictureListAdapter.setmSelectedImg(returnList);
+                    mPictureListAdapter.setSelectedImg(returnList);
                     mPictureListAdapter.notifyDataSetChanged();
                     changeTextViewCount(this);
                 }

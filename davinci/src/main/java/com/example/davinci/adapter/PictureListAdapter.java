@@ -124,11 +124,11 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         return mImgList.size();
     }
 
-    public List<String> getmSelectedImg(){
+    public List<String> getSelectedImg(){
         return mSelectedImg;
     }
 
-    public void setmSelectedImg(List<String> list){
+    public void setSelectedImg(List<String> list){
         mSelectedImg = list;
     }
 }

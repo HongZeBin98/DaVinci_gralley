@@ -106,6 +106,4 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
     public void setOnItemClickListener(PreviewThumbnailAdapter.OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
-
-
 }
