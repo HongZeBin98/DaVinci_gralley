@@ -23,6 +23,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
 
     private int mNewPosition;
     private int mLastPosition;
+    private ImageView mImageView;
     private List<String> mSelectedImg;
     private PreviewThumbnailAdapter.OnItemClickListener mOnItemClickListener;
 
@@ -60,6 +61,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
         ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, iv, false, 60);
         if (position == mNewPosition) {
             holder.thumbnailFrame.setVisibility(View.VISIBLE);
+            mImageView = holder.imageView;
         } else {
             holder.thumbnailFrame.setVisibility(View.GONE);
         }
@@ -89,7 +91,21 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
         mLastPosition = mNewPosition;
     }
 
+    /**
+     * 返回当前缩略图实例
+     * @return  当前缩略图实例
+     */
+    public ImageView getImageView(){
+        return mImageView;
+    }
+
+    /**
+     * 获取接口的实例化
+     * @param onItemClickListener 接口的实例化
+     */
     public void setOnItemClickListener(PreviewThumbnailAdapter.OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
+
+
 }

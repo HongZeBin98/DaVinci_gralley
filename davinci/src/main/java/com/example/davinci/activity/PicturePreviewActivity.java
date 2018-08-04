@@ -3,6 +3,7 @@ package com.example.davinci.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -139,8 +140,10 @@ public class PicturePreviewActivity extends AppCompatActivity {
                 //通过点击对图片选择列表进行增加或者减少
                 if (mChangedPicturePathList.contains(picturePath)) {
                     mChangedPicturePathList.remove(picturePath);
+                    mThumbnailAdapter.getImageView().setColorFilter(Color.parseColor("#77000000"));
                 } else {
                     mChangedPicturePathList.add(picturePath);
+                    mThumbnailAdapter.getImageView().setColorFilter(null);
                 }
                 //对ToolBar上发送进行状态的改变
                 changedPictureCount = mChangedPicturePathList.size();
