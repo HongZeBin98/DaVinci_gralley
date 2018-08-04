@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,14 @@ import java.util.List;
  */
 public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbnailAdapter.ViewHolder> {
 
+    private int mNewPosition;
+    private int mLastPosition;
     private List<String> mSelectedImg;
-    private int mPosition;
+    private PreviewThumbnailAdapter.OnItemClickListener mOnItemClickListener;
+
+    public interface OnItemClickListener{
+        void onClick(int position);
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -47,13 +54,22 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
 
     @SuppressLint("ResourceType")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         String path = mSelectedImg.get(position);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, holder.imageView, false, 60);
-        if (position == mPosition) {
+        ImageView iv = holder.imageView;
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, iv, false, 60);
+        if (position == mNewPosition) {
             holder.thumbnailFrame.setVisibility(View.VISIBLE);
         } else {
             holder.thumbnailFrame.setVisibility(View.GONE);
+        }
+        if(mOnItemClickListener != null){
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnItemClickListener.onClick(position);
+                }
+            });
         }
     }
 
@@ -62,20 +78,18 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
         return mSelectedImg.size();
     }
 
-    //传入当前页面的position
+    /**
+     * 传入当前页面的position
+     * @param position 当前页的位置
+     */
     public void setCurrentPosition(int position) {
-        mPosition = position;
-        notifyItemChanged(mPosition);
-        if (mPosition - 1 >= 0) {
-            notifyItemChanged(mPosition - 1);
-        }
-        if (mPosition + 1 <= mSelectedImg.size() - 1) {
-            notifyItemChanged(mPosition + 1);
-        }
+        mNewPosition = position;
+        notifyItemChanged(mNewPosition);
+        notifyItemChanged(mLastPosition);
+        mLastPosition = mNewPosition;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public void setOnItemClickListener(PreviewThumbnailAdapter.OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
     }
 }

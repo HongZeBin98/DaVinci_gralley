@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.davinci.bean.ImageBeanHolder;
@@ -150,7 +151,6 @@ public class ImageLoader {
         message.obj = new ImageBeanHolder(bitmap, imageView, path);
         mPictureHandler.sendMessage(message);
     }
-
 
     /**
      * 把任务添加到任务队列

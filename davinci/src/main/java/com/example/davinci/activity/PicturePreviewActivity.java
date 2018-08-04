@@ -16,9 +16,11 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.davinci.R;
+import com.example.davinci.adapter.AlbumListAdapter;
 import com.example.davinci.adapter.PreviewThumbnailAdapter;
 import com.example.davinci.adapter.ViewpagerAdapter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +40,9 @@ public class PicturePreviewActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private RecyclerView mRecyclerView;
     private List<String> mPicturePathList;
+    private ViewpagerAdapter mViewpagerAdapter;
     private List<String> mChangedPicturePathList;   //在预览中被更改的图片路径list
-    private PreviewThumbnailAdapter mAdapter;
+    private PreviewThumbnailAdapter mThumbnailAdapter;
 
 
     @Override
@@ -81,15 +84,15 @@ public class PicturePreviewActivity extends AppCompatActivity {
         //设置ToolBar
         setSupportActionBar(mToolbar);
         //给ViewPager提供数据
-        ViewpagerAdapter viewpagerAdapter = new ViewpagerAdapter(this, mPicturePathList);
-        mViewPager.setAdapter(viewpagerAdapter);
+        mViewpagerAdapter = new ViewpagerAdapter(this, mPicturePathList);
+        mViewPager.setAdapter(mViewpagerAdapter);
         //给recyclerView提供数据
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(manager);
         ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-        mAdapter = new PreviewThumbnailAdapter(mPicturePathList);
-        mRecyclerView.setAdapter(mAdapter);
+        mThumbnailAdapter = new PreviewThumbnailAdapter(mPicturePathList);
+        mRecyclerView.setAdapter(mThumbnailAdapter);
     }
 
 
@@ -117,7 +120,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
                     mCheckBox.setChecked(false);
                 }
                 mToolbar.setTitle((position + 1) + "/" + mPictureCount);
-                mAdapter.setCurrentPosition(position);
+                mThumbnailAdapter.setCurrentPosition(position);
                 mRecyclerView.scrollToPosition(position);
             }
 
@@ -157,6 +160,12 @@ public class PicturePreviewActivity extends AppCompatActivity {
             public void onClick(View view) {
                 setResult(mChangedPicturePathList, RESULT_OK);
                 finish();
+            }
+        });
+        mThumbnailAdapter.setOnItemClickListener(new PreviewThumbnailAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                mViewPager.setCurrentItem(position, false);
             }
         });
     }

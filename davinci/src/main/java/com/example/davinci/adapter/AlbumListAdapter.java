@@ -54,7 +54,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         FolderBean bean = mData.get(position);
         holder.albumName.setText(bean.getName());
         holder.pictureNumber.setText(bean.getCount() + "张");
