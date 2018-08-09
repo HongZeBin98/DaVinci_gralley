@@ -23,8 +23,6 @@ import static com.example.davinci.util.Constants.MODE_SCALE;
  */
 public class MagicalImageView extends android.support.v7.widget.AppCompatImageView implements ViewTreeObserver.OnGlobalLayoutListener, View.OnTouchListener {
 
-
-
     private Bitmap mBitmap;
     //设置初始加载图片只获取一次
     private boolean mOnce = false;
@@ -78,6 +76,68 @@ public class MagicalImageView extends android.support.v7.widget.AppCompatImageVi
                 return true;
             }
         });
+    }
+
+    /**
+     * 当双击后进行的处理
+     *
+     * @param e 动作事件，通过该变量可以获得点击的坐标
+     */
+    private void doubleTap(MotionEvent e) {
+        if (!isReady()) {
+            return;
+        }
+        //获取点击的坐标
+        float doubleX = e.getX();
+        float doubleY = e.getY();
+        // 控件的大小
+        float width = getWidth();
+        float height = getHeight();
+        //获取第一层变换矩阵
+        Matrix innerMatrix = getInnerMatrix();
+        //当前总的缩放比例
+        float innerScale = calculateMatrixScale(innerMatrix);
+        float outerScale = calculateMatrixScale(mOuterMatrix);
+        //当前缩放比例
+        float currentScale = innerScale * outerScale;
+        //开始计算缩放动画的结果矩阵
+        Matrix animEnd = new Matrix(mOuterMatrix);
+        //将要放大的大小
+        float nextScale = calculateNextScale(innerScale, outerScale);
+        //缩放
+        animEnd.postScale(nextScale / currentScale, nextScale / currentScale, doubleX, doubleY);
+        // 将图片平移到中心
+        animEnd.postTranslate(width / 2F - doubleX, height / 2F - doubleY);
+        // 结合缩放
+        Matrix finalMatrix = new Matrix(innerMatrix);
+        finalMatrix.postConcat(animEnd);
+        // 获取边界
+        RectF bound = new RectF(0, 0, getDrawable().getIntrinsicWidth(), getDrawable().getIntrinsicHeight());
+        finalMatrix.mapRect(bound);
+        // 修正位置
+        float postX = 0;
+        float postY = 0;
+        if (bound.right - bound.left < width) {
+            postX = width / 2f - (bound.right + bound.left) / 2f;
+        } else if (bound.left > 0) {
+            postX = -bound.left;
+        } else if (bound.right < width) {
+            postX = width - bound.right;
+        }
+        if (bound.bottom - bound.top < height) {
+            postY = height / 2f - (bound.bottom + bound.top) / 2f;
+        } else if (bound.top > 0) {
+            postY = -bound.top;
+        } else if (bound.bottom < height) {
+            postY = height - bound.bottom;
+        }
+        // 修正
+        animEnd.postTranslate(postX, postY);
+        // 结束动画
+        cancelAllAnimator();
+        //启动矩阵动画
+        mScaleAnimator = new ScaleAnimator(mOuterMatrix, animEnd);
+        mScaleAnimator.start();
     }
 
     /**
@@ -148,69 +208,6 @@ public class MagicalImageView extends android.support.v7.widget.AppCompatImageVi
         }
     }
 
-
-    /**
-     * 当双击后进行的处理
-     *
-     * @param e 动作事件，通过该变量可以获得点击的坐标
-     */
-    private void doubleTap(MotionEvent e) {
-        if (!isReady()) {
-            return;
-        }
-        //获取点击的坐标
-        float doubleX = e.getX();
-        float doubleY = e.getY();
-        // 控件的大小
-        float width = getWidth();
-        float height = getHeight();
-        //获取第一层变换矩阵
-        Matrix innerMatrix = getInnerMatrix();
-        //当前总的缩放比例
-        float innerScale = calculateMatrixScale(innerMatrix);
-        float outerScale = calculateMatrixScale(mOuterMatrix);
-        //当前缩放比例
-        float currentScale = innerScale * outerScale;
-        //开始计算缩放动画的结果矩阵
-        Matrix animEnd = new Matrix(mOuterMatrix);
-        //将要放大的大小
-        float nextScale = calculateNextScale(innerScale, outerScale);
-        //缩放
-        animEnd.postScale(nextScale / currentScale, nextScale / currentScale, doubleX, doubleY);
-        // 将图片平移到中心
-        animEnd.postTranslate(width / 2F - doubleX, height / 2F - doubleY);
-        // 结合缩放
-        Matrix finalMatrix = new Matrix(innerMatrix);
-        finalMatrix.postConcat(animEnd);
-        // 获取边界
-        RectF bound = new RectF(0, 0, getDrawable().getIntrinsicWidth(), getDrawable().getIntrinsicHeight());
-        finalMatrix.mapRect(bound);
-        // 修正位置
-        float postX = 0;
-        float postY = 0;
-        if (bound.right - bound.left < width) {
-            postX = width / 2f - (bound.right + bound.left) / 2f;
-        } else if (bound.left > 0) {
-            postX = -bound.left;
-        } else if (bound.right < width) {
-            postX = width - bound.right;
-        }
-        if (bound.bottom - bound.top < height) {
-            postY = height / 2f - (bound.bottom + bound.top) / 2f;
-        } else if (bound.top > 0) {
-            postY = -bound.top;
-        } else if (bound.bottom < height) {
-            postY = height - bound.bottom;
-        }
-        // 修正
-        animEnd.postTranslate(postX, postY);
-        // 结束动画
-        cancelAllAnimator();
-        //启动矩阵动画
-        mScaleAnimator = new ScaleAnimator(mOuterMatrix, animEnd);
-        mScaleAnimator.start();
-    }
-
     /**
      * 获取图片总变换矩阵.
      * <p>
@@ -253,7 +250,6 @@ public class MagicalImageView extends android.support.v7.widget.AppCompatImageVi
         matrix.setRectToRect(tempSrc, tempDst, Matrix.ScaleToFit.CENTER);
         return matrix;
     }
-
 
     /**
      * 判断当前情况是否能执行手势相关计算
@@ -377,7 +373,7 @@ public class MagicalImageView extends android.support.v7.widget.AppCompatImageVi
                 } else if (mCurrentMode == MODE_SCALE && event.getPointerCount() > 1) {
                     //两个缩放点间的距离
                     float distance = calculateDistance(new PointF(event.getX(0), event.getY(0)),
-                            new PointF(event.getX(1), event.getY(1)));;
+                            new PointF(event.getX(1), event.getY(1)));
                     //保存缩放点中点
                     mLastMovePoint = calculateCenterPoint(new PointF(event.getX(0), event.getY(0)),
                             new PointF(event.getX(1), event.getY(1)));

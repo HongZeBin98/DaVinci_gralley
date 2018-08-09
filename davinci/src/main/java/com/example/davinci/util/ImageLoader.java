@@ -1,15 +1,15 @@
 package com.example.davinci.util;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.davinci.bean.ImageBeanHolder;
+import com.example.davinci.bean.LocalityChainMember;
+import com.example.davinci.bean.LruCacheChainMember;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -100,6 +100,11 @@ public class ImageLoader {
      * @param imageView 放图片的容器
      */
     public void loadImage(final String path, final ImageView imageView, final boolean originalPictureFlag, final int reqFigure) {
+        //构建获取图片的责任链中的两个处理对象
+        LruCacheChainMember lruCacheHandler = new LruCacheChainMember();
+        final LocalityChainMember localityHandler = new LocalityChainMember();
+        //串成一条责任链
+        lruCacheHandler.setNextHandler(localityHandler);
         //防止出现图片闪烁现象，给imageView设置一个标签
         imageView.setTag(path);
         if (mPictureHandler == null) {
@@ -109,33 +114,14 @@ public class ImageLoader {
             addTaskIntoQueue(new Runnable() {
                 @Override
                 public void run() {
-                    Bitmap bm;
-                    bm = new ImageResizer().decodeSampleBitmapFromResource(path, reqFigure, reqFigure);
+                    Bitmap bm = new ImageResizer().decodeSampleBitmapFromResource(path, reqFigure, reqFigure);
                     //释放信号量
                     mTaskSemaphore.release();
                     sendUIMessage(bm, imageView, path);
                 }
             });
         } else {
-            //从缓存中获取图片
-            Bitmap bitmap = mPictureLruCache.getBitmapFromLruCache(path);
-            if (bitmap != null) {
-                sendUIMessage(bitmap, imageView, path);
-            } else {
-                addTaskIntoQueue(new Runnable() {
-                    @Override
-                    public void run() {
-                        Bitmap bm;
-                        //获取缩略图
-                        bm = new ImageResizer().decodeSampleBitmapFromResource(path, reqFigure, reqFigure);
-                        //把缩略图放入缓存
-                        mPictureLruCache.addBitmapToLruCache(path, bm);
-                        //释放信号量
-                        mTaskSemaphore.release();
-                        sendUIMessage(bm, imageView, path);
-                    }
-                });
-            }
+            lruCacheHandler.getBitmap(this, path, reqFigure, imageView, mTaskSemaphore, mPictureLruCache);
         }
     }
 
@@ -146,7 +132,7 @@ public class ImageLoader {
      * @param imageView 图片容器
      * @param path      图片地址
      */
-    private void sendUIMessage(Bitmap bitmap, ImageView imageView, String path) {
+    public void sendUIMessage(Bitmap bitmap, ImageView imageView, String path) {
         Message message = Message.obtain();
         message.obj = new ImageBeanHolder(bitmap, imageView, path);
         mPictureHandler.sendMessage(message);
@@ -155,7 +141,7 @@ public class ImageLoader {
     /**
      * 把任务添加到任务队列
      */
-    private void addTaskIntoQueue(Runnable action) {
+    public void addTaskIntoQueue(Runnable action) {
         mTaskQueue.add(action);
         mThreadHandler.sendEmptyMessage(EXECUTE_TASK);
     }
