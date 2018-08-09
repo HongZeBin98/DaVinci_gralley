@@ -1,12 +1,12 @@
 package com.example.davinci.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +15,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.davinci.R;
+import com.example.davinci.activity.AmplificationActivity;
 import com.example.davinci.util.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.davinci.util.Constants.MAX_SELECTION_COUNT;
 
@@ -38,12 +37,12 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        ImageButton select;
+        ImageButton selection;
 
         ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.id_item_picture);
-            select = itemView.findViewById(R.id.id_item_select);
+            selection = itemView.findViewById(R.id.id_item_select);
         }
     }
 
@@ -56,47 +55,64 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, null, false);
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, null, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PictureListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PictureListAdapter.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         final String path = mImgList.get(position);
-            holder.imageView.setImageResource(R.drawable.black_background);
+        holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
-        final String filePath = path;
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(filePath, holder.imageView, false, 100);
-        if (mSelectedImg.contains(filePath)) {
+        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, holder.imageView, false, 100);
+        if (mSelectedImg.contains(path)) {
             selectTrue(holder);
         } else {
             selectFalse(holder);
         }
-        holder.select.setOnClickListener(new View.OnClickListener() {
+        holder.selection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                //该图片已经被选择
-                if (mSelectedImg.contains(filePath)) {
-                    mSelectedImg.remove(filePath);
-                    selectFalse(holder);
-                    mPictureCount--;
-                    intent.setAction("com.example.davinci.REDUCE_SELECTION");
-                }
-                //该图片没有被选择
-                else {
-                    if (mPictureCount < MAX_SELECTION_COUNT) {
-                        mSelectedImg.add(filePath);
-                        selectTrue(holder);
-                        mPictureCount++;
-                        intent.setAction("com.example.davinci.ADD_SELECTION");
-                    } else {
-                        Toast.makeText(mContext, "你最多只能选择" + MAX_SELECTION_COUNT + "张图片！", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                mLocalBroadcastManager.sendBroadcast(intent);
+               selectionOnClick(path, holder);
             }
         });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AmplificationActivity.actionStart(mContext, mImgList, mSelectedImg ,position);
+            }
+        });
+    }
+
+    /**
+     * 图片选择框被点击
+     * @param path 被选中图片的路径
+     * @param holder ViewHolder
+     */
+    private void selectionOnClick(String path, ViewHolder holder){
+        Intent intent = new Intent();
+        //该图片已经被选择
+        if (mSelectedImg.contains(path)) {
+            mSelectedImg.remove(path);
+            selectFalse(holder);
+            mPictureCount--;
+            //设置一条图片选择数减少的广播
+            intent.setAction("com.example.davinci.REDUCE_SELECTION");
+        }
+        //该图片没有被选择
+        else {
+            if (mPictureCount < MAX_SELECTION_COUNT) {
+                mSelectedImg.add(path);
+                selectTrue(holder);
+                mPictureCount++;
+                //设置一条图片选择数增加的广播
+                intent.setAction("com.example.davinci.ADD_SELECTION");
+            } else {
+                Toast.makeText(mContext, "你最多只能选择" + MAX_SELECTION_COUNT + "张图片！", Toast.LENGTH_SHORT).show();
+            }
+        }
+        //发送广播通知主Activity，更新被选择的图片数
+        mLocalBroadcastManager.sendBroadcast(intent);
     }
 
     /**
@@ -105,7 +121,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
      * @param holder viewHolder
      */
     private void selectTrue(PictureListAdapter.ViewHolder holder) {
-        holder.select.setImageResource(R.drawable.yes_selection);
+        holder.selection.setImageResource(R.drawable.yes_selection);
         holder.imageView.setColorFilter(Color.parseColor("#77000000"));
     }
 
@@ -115,7 +131,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
      * @param holder viewHolder
      */
     private void selectFalse(PictureListAdapter.ViewHolder holder) {
-        holder.select.setImageResource(R.drawable.no_selection);
+        holder.selection.setImageResource(R.drawable.no_selection);
         holder.imageView.setColorFilter(null);
     }
 
@@ -124,11 +140,11 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         return mImgList.size();
     }
 
-    public List<String> getSelectedImg(){
+    public List<String> getSelectedImg() {
         return mSelectedImg;
     }
 
-    public void setSelectedImg(List<String> list){
+    public void setSelectedImg(List<String> list) {
         mSelectedImg = list;
     }
 }

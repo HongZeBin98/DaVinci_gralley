@@ -15,6 +15,7 @@ import com.example.davinci.R;
 import com.example.davinci.util.ImageLoader;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 预览界面缩略图的横向RecyclerView适配器
@@ -69,7 +70,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mOnItemClickListener.onClick(position);
+                    mOnItemClickListener.onClick(position );
                 }
             });
         }
@@ -85,6 +86,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
      * @param position 当前页的位置
      */
     public void setCurrentPosition(int position) {
+        Log.e("position", ""+position );
         mNewPosition = position;
         notifyItemChanged(mNewPosition);
         notifyItemChanged(mLastPosition);

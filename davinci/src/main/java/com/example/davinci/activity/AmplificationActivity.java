@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,34 +16,33 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.davinci.R;
+import com.example.davinci.SelectionSpec;
 import com.example.davinci.adapter.PreviewThumbnailAdapter;
 import com.example.davinci.adapter.viewpagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 图片预览
- * Created By Mr.Bean
- */
-public class PicturePreviewActivity extends AppCompatActivity {
+public class AmplificationActivity extends AppCompatActivity {
 
-    private int mPosition;
-    private int mPictureCount;
+    private int mFolderPictureCount;
+    private int mPagerPosition;
+    private int mSelectedPosition;
+    private int mMaxSelectionCount;
     private TextView mSender;
     private Toolbar mToolbar;
     private CheckBox mCheckBox;
     private ViewPager mViewPager;
     private RecyclerView mRecyclerView;
-    private List<String> mPicturePathList;
+    private List<Integer> mPositionList;    //储存选中的文件夹图片在缩略图中的位置
+    private List<String> mFolderPicturePathList;
     private List<String> mChangedPicturePathList;   //在预览中被更改的图片路径list
     private PreviewThumbnailAdapter mThumbnailAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture_preview);
+        setContentView(R.layout.activity_amplification);
         initView();
         initData();
         initEvent();
@@ -55,43 +53,54 @@ public class PicturePreviewActivity extends AppCompatActivity {
      */
     private void getPicturePathList() {
         Intent intent = getIntent();
-        mPicturePathList = intent.getStringArrayListExtra("picture_path_list");
-        mChangedPicturePathList.addAll(mPicturePathList);
+        mSelectedPosition = intent.getIntExtra("selection_position", -1);
+        mChangedPicturePathList = intent.getStringArrayListExtra("selection_picture_path_list");
+        mFolderPicturePathList = intent.getStringArrayListExtra("folder_picture_path_list");
     }
 
-    private void initView() {
+    private void initView(){
+        mPositionList = new ArrayList<>();
         mChangedPicturePathList = new ArrayList<>();
-        mSender = findViewById(R.id.id_preview_sender);
-        mToolbar = findViewById(R.id.id_preview_toolbar);
-        mViewPager = findViewById(R.id.id_preview_viewPager);
-        mCheckBox = findViewById(R.id.id_bottom_preview_checkBox);
-        mRecyclerView= findViewById(R.id.id_preview_recyclerView);
+        mSender = findViewById(R.id.id_amplification_sender);
+        mToolbar = findViewById(R.id.id_amplification_toolbar);
+        mViewPager = findViewById(R.id.id_amplification_viewPager);
+        mCheckBox = findViewById(R.id.id_bottom_amplification_checkBox);
+        mRecyclerView = findViewById(R.id.id_amplification_recyclerView);
     }
 
     @SuppressLint("SetTextI18n")
     private void initData() {
-        //得到缩略图activity返回的选中图片的路径list
+        //得到上一个activity传递过来的数据
         getPicturePathList();
-        mPictureCount = mPicturePathList.size();
+        mPagerPosition = mSelectedPosition;
+        mMaxSelectionCount = SelectionSpec.getInstance().maxSelectable;
+        //把选中的图片在文件夹中的位置保存
+        for(String x: mChangedPicturePathList){
+            mPositionList.add(mFolderPicturePathList.indexOf(x));
+        }
+        //设置默认没有被选择
+        mCheckBox.setChecked(false);
+        int selectedPictureCount = mChangedPicturePathList.size();
+        mFolderPictureCount = mFolderPicturePathList.size();
         //设置标题默认值
-        mToolbar.setTitle(1 + "/" + mPictureCount);
+        mToolbar.setTitle((mSelectedPosition + 1) + "/" + mFolderPictureCount);
         //设置发送键默认状态
-        mSender.setText("发送(" + mPictureCount + "/" + mPictureCount + ")");
+        mSender.setText("发送(" + selectedPictureCount + "/" + mMaxSelectionCount + ")");
         mSender.setTextColor(getResources().getColor(R.color.colorWhite));
         //设置ToolBar
         setSupportActionBar(mToolbar);
         //给ViewPager提供数据
-        viewpagerAdapter mViewpagerAdapter = new viewpagerAdapter(this, mPicturePathList);
-        mViewPager.setAdapter(mViewpagerAdapter);
+        viewpagerAdapter viewpagerAdapter = new viewpagerAdapter(this, mFolderPicturePathList);
+        mViewPager.setAdapter(viewpagerAdapter);
+        mViewPager.setCurrentItem(mSelectedPosition, false);
         //给recyclerView提供数据
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(manager);
-        ((SimpleItemAnimator)mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-        mThumbnailAdapter = new PreviewThumbnailAdapter(mPicturePathList);
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        mThumbnailAdapter = new PreviewThumbnailAdapter(mChangedPicturePathList);
         mRecyclerView.setAdapter(mThumbnailAdapter);
     }
-
 
     private void initEvent() {
         //标题栏返回键点击监听
@@ -110,14 +119,17 @@ public class PicturePreviewActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                mPosition = position;
-                if (mChangedPicturePathList.contains(mPicturePathList.get(position))) {
+                mPagerPosition = position;
+                if (mChangedPicturePathList.contains(mFolderPicturePathList.get(position))) {
                     mCheckBox.setChecked(true);
                 } else {
                     mCheckBox.setChecked(false);
                 }
-                mToolbar.setTitle((position + 1) + "/" + mPictureCount);
-                mThumbnailAdapter.setCurrentPosition(position);
+                mToolbar.setTitle((position + 1) + "/" + mFolderPictureCount);
+                int thumbnailPosition = mPositionList.indexOf(position);
+                if(thumbnailPosition != -1){
+                    mThumbnailAdapter.setCurrentPosition(thumbnailPosition);
+                }
                 mRecyclerView.scrollToPosition(position);
             }
 
@@ -132,19 +144,19 @@ public class PicturePreviewActivity extends AppCompatActivity {
                 int color;
                 String senderStr;
                 int changedPictureCount;
-                String picturePath = mPicturePathList.get(mPosition);
+                String picturePath = mFolderPicturePathList.get(mPagerPosition);
                 //通过点击对图片选择列表进行增加或者减少
                 if (mChangedPicturePathList.contains(picturePath)) {
                     mChangedPicturePathList.remove(picturePath);
-                    mThumbnailAdapter.getImageView().setColorFilter(Color.parseColor("#77000000"));
+                    mPositionList.remove((Integer) mPagerPosition);
                 } else {
                     mChangedPicturePathList.add(picturePath);
-                    mThumbnailAdapter.getImageView().setColorFilter(null);
+                    mPositionList.add(mPagerPosition);
                 }
                 //对ToolBar上发送进行状态的改变
                 changedPictureCount = mChangedPicturePathList.size();
                 if (changedPictureCount > 0) {
-                    senderStr = "发送(" + changedPictureCount + "/" + mPictureCount + ")";
+                    senderStr = "发送(" + changedPictureCount + "/" + mMaxSelectionCount + ")";
                     color = getResources().getColor(R.color.colorWhite);
                 } else {
                     senderStr = "";
@@ -152,6 +164,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
                 }
                 mSender.setTextColor(color);
                 mSender.setText(senderStr);
+                mThumbnailAdapter.notifyDataSetChanged();
             }
         });
         mSender.setOnClickListener(new View.OnClickListener() {
@@ -164,7 +177,7 @@ public class PicturePreviewActivity extends AppCompatActivity {
         mThumbnailAdapter.setOnItemClickListener(new PreviewThumbnailAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                mViewPager.setCurrentItem(position, false);
+                mViewPager.setCurrentItem(mPositionList.get(position), false);
             }
         });
     }
@@ -173,7 +186,6 @@ public class PicturePreviewActivity extends AppCompatActivity {
     public void onBackPressed() {
         setResult(mChangedPicturePathList, RESULT_CANCELED);
         super.onBackPressed();
-
     }
 
     /**
@@ -185,16 +197,18 @@ public class PicturePreviewActivity extends AppCompatActivity {
         setResult(sign, intent);
     }
 
-
-
     /**
      * 启动该activity
-     * @param context         上一个activity
-     * @param picturePathList 需要传入该activity的被选择图片路径
+     *
+     * @param context                 上一个activity
+     * @param selectedPicturePathList 需要传入该activity的被选择图片路径
+     * @param allPicturePathList      需要传入所有图片的路径
      */
-    public static void actionStart(Context context, List<String> picturePathList) {
-        Intent intent = new Intent(context, PicturePreviewActivity.class);
-        intent.putStringArrayListExtra("picture_path_list", (ArrayList<String>) picturePathList);
-        ((Activity)context).startActivityForResult(intent, 1);
+    public static void actionStart(Context context, List<String> allPicturePathList, List<String> selectedPicturePathList, int position) {
+        Intent intent = new Intent(context, AmplificationActivity.class);
+        intent.putExtra("selection_position", position);
+        intent.putStringArrayListExtra("folder_picture_path_list", (ArrayList<String>) allPicturePathList);
+        intent.putStringArrayListExtra("selection_picture_path_list", (ArrayList<String>) selectedPicturePathList);
+        ((Activity) context).startActivityForResult(intent, 1);
     }
 }

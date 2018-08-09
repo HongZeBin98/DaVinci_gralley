@@ -11,12 +11,12 @@ import com.example.davinci.R;
 import com.example.davinci.util.ImageLoader;
 import java.util.List;
 
-public class ViewpagerAdapter extends PagerAdapter {
+public class viewpagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private List<String> mPicturePathList;
 
-    public ViewpagerAdapter(Context context, List<String> picturePathList) {
+    public viewpagerAdapter(Context context, List<String> picturePathList) {
         mContext = context;
         mPicturePathList = picturePathList;
     }

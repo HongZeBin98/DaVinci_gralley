@@ -9,8 +9,12 @@
         <activity
             android:name=".activity.GalleryMainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <activity android:name=".activity.PicturePreviewActivity"
+        <activity
+            android:name=".activity.PicturePreviewActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+        <activity
+            android:name=".activity.AmplificationActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"/>
     </application>
 
 </manifest>
