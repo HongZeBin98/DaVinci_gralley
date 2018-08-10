@@ -15,7 +15,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.davinci.R;
+import com.example.davinci.SelectionSpec;
 import com.example.davinci.activity.AmplificationActivity;
+import com.example.davinci.engine.ImageEngine;
 import com.example.davinci.util.ImageLoader;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import static com.example.davinci.util.Constants.MAX_SELECTION_COUNT;
 public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.ViewHolder> {
     //记录被选择的图片
     private List<String> mSelectedImg = new ArrayList<>();
+    private ImageEngine mEngine;
     private int mPictureCount = 0;
     private Context mContext;
     private List<String> mImgList;
@@ -50,6 +53,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         mImgList = imgList;
         mContext = context;
         mLocalBroadcastManager = localBroadcastManager;
+        mEngine = SelectionSpec.getInstance().imageEngine;
     }
 
     @NonNull
@@ -64,7 +68,7 @@ public class PictureListAdapter extends RecyclerView.Adapter<PictureListAdapter.
         final String path = mImgList.get(position);
         holder.imageView.setImageResource(R.drawable.black_background);
         holder.imageView.setColorFilter(null);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, holder.imageView, false, 100);
+        mEngine.loadThumbnail(ImageLoader.Type.LIFO, path, holder.imageView, 100);
         if (mSelectedImg.contains(path)) {
             selectTrue(holder);
         } else {

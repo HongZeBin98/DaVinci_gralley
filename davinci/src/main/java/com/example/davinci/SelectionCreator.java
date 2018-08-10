@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 
 import com.example.davinci.activity.GalleryMainActivity;
 import com.example.davinci.bean.DaVinci;
+import com.example.davinci.engine.ImageEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,11 @@ public class SelectionCreator {
         if (maxSelectable < 1)
             throw new IllegalArgumentException("maxSelectable must be greater than or equal to one");
         mSelectionSpec.maxSelectable = maxSelectable;
+        return this;
+    }
+
+    public SelectionCreator imageEngine(ImageEngine engine) {
+        mSelectionSpec.imageEngine = engine;
         return this;
     }
 }

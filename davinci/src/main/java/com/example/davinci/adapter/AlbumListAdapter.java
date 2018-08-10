@@ -10,14 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.davinci.SelectionSpec;
 import com.example.davinci.bean.FolderBean;
 import com.example.davinci.R;
+import com.example.davinci.engine.ImageEngine;
 import com.example.davinci.util.ImageLoader;
 
 import java.util.List;
 
 public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.ViewHolder> {
 
+    private ImageEngine mEngine;
     private LayoutInflater mInflater;
     private List<FolderBean> mData;
     private OnItemClickListener mOnItemClickListener;
@@ -42,6 +45,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     public AlbumListAdapter(Context context, List<FolderBean> objects) {
         mInflater = LayoutInflater.from(context);
         mData = objects;
+        mEngine = SelectionSpec.getInstance().imageEngine;
     }
 
 
@@ -58,8 +62,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         holder.albumName.setText(bean.getName());
         holder.pictureNumber.setText(bean.getCount() + "张");
         holder.imageView.setImageResource(R.drawable.black_background);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(bean.getFirstImgPath(), holder.imageView, false, 100);
-
+        mEngine.loadThumbnail(ImageLoader.Type.LIFO, bean.getFirstImgPath(), holder.imageView, 100);
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

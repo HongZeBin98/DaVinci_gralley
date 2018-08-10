@@ -1,7 +1,10 @@
 package com.example.davinci;
 
+import com.example.davinci.engine.ImageEngine;
+
 public final class SelectionSpec {
     public int maxSelectable;
+    public ImageEngine imageEngine;
 
     private SelectionSpec() {
     }

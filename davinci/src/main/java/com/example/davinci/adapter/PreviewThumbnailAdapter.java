@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.davinci.R;
+import com.example.davinci.SelectionSpec;
+import com.example.davinci.engine.ImageEngine;
 import com.example.davinci.util.ImageLoader;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
 
     private int mNewPosition;
     private int mLastPosition;
+    private ImageEngine mEngine;
     private ImageView mImageView;
     private List<String> mSelectedImg;
     private PreviewThumbnailAdapter.OnItemClickListener mOnItemClickListener;
@@ -44,6 +47,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
     }
 
     public PreviewThumbnailAdapter(List<String> imgList) {
+        mEngine = SelectionSpec.getInstance().imageEngine;
         mSelectedImg = imgList;
     }
 
@@ -59,7 +63,7 @@ public class PreviewThumbnailAdapter extends RecyclerView.Adapter<PreviewThumbna
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         String path = mSelectedImg.get(position);
         ImageView iv = holder.imageView;
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(path, iv, false, 60);
+        mEngine.loadThumbnail(ImageLoader.Type.LIFO, path, iv, 60);
         if (position == mNewPosition) {
             holder.thumbnailFrame.setVisibility(View.VISIBLE);
             mImageView = holder.imageView;

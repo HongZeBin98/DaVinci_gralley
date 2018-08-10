@@ -8,17 +8,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.davinci.R;
+import com.example.davinci.SelectionSpec;
+import com.example.davinci.engine.ImageEngine;
 import com.example.davinci.util.ImageLoader;
 import java.util.List;
 
 public class viewpagerAdapter extends PagerAdapter {
 
     private Context mContext;
+    private ImageEngine mEngine;
     private List<String> mPicturePathList;
 
     public viewpagerAdapter(Context context, List<String> picturePathList) {
         mContext = context;
         mPicturePathList = picturePathList;
+        mEngine = SelectionSpec.getInstance().imageEngine;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class viewpagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = View.inflate(mContext, R.layout.viewpager_item, null);
         ImageView imageView = view.findViewById(R.id.id_viewpager_imageView);
-        ImageLoader.getInstance(ImageLoader.Type.LIFO).loadImage(mPicturePathList.get(position), imageView, true, 1080);
+        mEngine.loadSamplePicture(ImageLoader.Type.LIFO, mPicturePathList.get(position), imageView, 1080);
         container.addView(view);
         return view;
     }

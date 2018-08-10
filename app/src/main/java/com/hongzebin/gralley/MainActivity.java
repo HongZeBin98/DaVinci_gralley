@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.davinci.bean.DaVinci;
+import com.example.davinci.engine.InnerEngine;
 import com.example.davinci.util.Authority;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
                 DaVinci.from(MainActivity.this)
                         .choose()
                         .maxSelectable(9)
+                        .imageEngine(InnerEngine.getInstance())
                         .forResult(1);
             }
         });
